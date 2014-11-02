@@ -21,7 +21,7 @@ public class Servlet extends HttpServlet{
     public void init() throws ServletException {
         super.init();
         Reflections reflections = new Reflections("controllers");
-        reflections.getMethodsAnnotatedWith()
+        //reflections.getMethodsAnnotatedWith();
 
 
         Set<Class<?>> getMethod = reflections.getTypesAnnotatedWith(GET.class);
@@ -33,8 +33,8 @@ public class Servlet extends HttpServlet{
 
     private void makeRouteMap(Set<Class<?>> classSet){
         Map<String,?> map = new HashMap<String, Object>();
-        for(Class<?> c : classSet){
-            c.getAnnotation()
-        }
+//        for(Class<?> c : classSet){
+//            c.getAnnotation();
+//        }
     }
 }
