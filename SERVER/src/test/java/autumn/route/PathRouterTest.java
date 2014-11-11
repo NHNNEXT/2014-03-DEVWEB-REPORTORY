@@ -5,7 +5,10 @@ import autumn.Result;
 import org.junit.Assert;
 import org.junit.Test;
 
+import javax.management.MalformedObjectNameException;
 import java.lang.reflect.Method;
+
+import static autumn.route.PathRouter.PathNode;
 
 
 /**
@@ -16,7 +19,7 @@ public class PathRouterTest {
     @Test
     public void testMakingPathTree(){
 
-        PathRouter.PathNode root = new PathRouter.PathNode(null);
+        PathNode root = new PathNode(null);
 
         // it should create child nodes in degree 1.
 
@@ -42,7 +45,7 @@ public class PathRouterTest {
         root.path("/ccc").path("/ddd");
 
         Assert.assertTrue(
-                root.childNodes.getOrDefault("ccc",new PathRouter.PathNode(null))
+                root.childNodes.getOrDefault("ccc",new PathNode(null))
                     .childNodes.get("ddd")
                 != null
         );
@@ -52,8 +55,8 @@ public class PathRouterTest {
         root.path("/eee/fff/ggg");
 
         Assert.assertTrue(
-                root.childNodes.getOrDefault("eee",new PathRouter.PathNode(null))
-                        .childNodes.getOrDefault("fff",new PathRouter.PathNode(null))
+                root.childNodes.getOrDefault("eee",new PathNode(null))
+                        .childNodes.getOrDefault("fff",new PathNode(null))
                         .childNodes.get("ggg")
                         != null
         );
@@ -61,9 +64,9 @@ public class PathRouterTest {
     }
 
     @Test
-    public void testMakingActionTree(){
+    public void testMakingActionTree() throws MalformedObjectNameException {
 
-        PathRouter.PathNode root = new PathRouter.PathNode(null);
+        PathNode root = new PathNode(null);
         Method testMethod1=null,testMethod2=null;
         try {
             testMethod1 = this.getClass().getDeclaredMethod("dummyMethod_no_param");
@@ -76,8 +79,7 @@ public class PathRouterTest {
         root.addAction("/aaa",testMethod1, PathRouter.REST_METHOD_ID_GET);
 
         Assert.assertTrue(
-                ((PathRouter.PathNode) root.path("aaa")).actions[PathRouter.REST_METHOD_ID_GET]
-                        == testMethod1
+                testMethod1.equals(((PathNode) root.path("aaa")).actions[PathRouter.REST_METHOD_ID_GET].method)
         );
 
 
@@ -85,7 +87,7 @@ public class PathRouterTest {
         try{
             Assert.assertTrue(
                     Result.class.isInstance(
-                            root.doAct("/aaa", new Request(PathRouter.REST_METHOD_ID_GET))
+                            root.doAct(new Request(PathRouter.REST_METHOD_ID_GET, "/aaa"))
                     )
             );
         }
@@ -99,8 +101,8 @@ public class PathRouterTest {
         try{
             Assert.assertTrue(
                     Result.class.isInstance(
-                            root.doAct(String.format("/{%s}/{%s}/aaa",testParam1,testParam2),
-                                    new Request(PathRouter.REST_METHOD_ID_GET))
+                            root.doAct(new Request(PathRouter.REST_METHOD_ID_GET,
+                                    String.format("/{%s}/{%s}/aaa",testParam1,testParam2)))
                     )
             );
         }
@@ -110,13 +112,13 @@ public class PathRouterTest {
 
 
         // it should recognize method parameter names.
-        root.addAction("/{b}/{a}/aaa",testMethod2, PathRouter.REST_METHOD_ID_POST);
+            root.addAction("/{b}/{a}/aaa",testMethod2, PathRouter.REST_METHOD_ID_POST);
 
         try{
             Assert.assertTrue(
                     Result.class.isInstance(
-                            root.doAct(String.format("/{%s}/{%s}/aaa",testParam2,testParam1),
-                                    new Request(PathRouter.REST_METHOD_ID_GET))
+                            root.doAct( new Request(PathRouter.REST_METHOD_ID_GET,
+                                    String.format("/{%s}/{%s}/aaa",testParam2,testParam1)))
                     )
             );
         }
@@ -126,16 +128,18 @@ public class PathRouterTest {
 
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static Result dummyMethod_no_param(){
         return new Result() {};
     }
 
-//    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings("FieldCanBeLocal")
     private String testParam1 = "param1";
 
-//    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings("FieldCanBeLocal")
     private String testParam2 = "param2";
 
+    @SuppressWarnings("UnusedDeclaration")
     public static Result dummyMethod_with_param(String a, String b){
         Assert.assertEquals(a,"param1");
         Assert.assertEquals(a,"param2");

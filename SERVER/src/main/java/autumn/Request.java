@@ -5,8 +5,14 @@ package autumn;
  */
 public class Request {
     public int method;
+    private String path;
 
-    public Request(int method){
-        this.method=method;
+    public Request(int method, String path) {
+        this.method = method;
+        this.path = path;
+    }
+
+    public String getPath() {
+        return path;
     }
 }
