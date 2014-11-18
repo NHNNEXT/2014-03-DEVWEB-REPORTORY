@@ -2,9 +2,11 @@ package autumn.route;
 
 import autumn.Request;
 import autumn.Result;
+import autumn.annotation.INP;
 
 import javax.annotation.Nullable;
 import javax.management.MalformedObjectNameException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -22,6 +24,9 @@ public class PathRouter {
     static final int REST_METHOD_ID_INFO = 6;
     static final int REST_METHOD_ID_HEAD = 7;
     static final int REST_METHOD_ID_CUSTUM = -1; //todo 커스텀 메서드 대응.
+
+    private static final String WILD_CARD_REGEX_1 = "^\\{[^}]+\\}$";
+    private static final String WILD_CARD_REGEX_2 = "^:[^:]+$";
 
     PathNode root = new PathNode(null);
 
@@ -99,8 +104,18 @@ public class PathRouter {
             String nodeName = pathIter.next();
 
             PathNode childNode;
-            boolean isWhileCard = nodeName.matches("^\\{[^}]+\\}$");
-            if(isWhileCard){
+            boolean isWildCard = false;
+            if(nodeName.matches(WILD_CARD_REGEX_1)){
+                isWildCard=true;
+                nodeName = nodeName.substring(1,nodeName.length()-1);
+            }
+            else if(nodeName.matches(WILD_CARD_REGEX_2)){
+                isWildCard=true;
+                nodeName = nodeName.substring(1,nodeName.length());
+            }
+
+
+            if(isWildCard){
                 childNode = childWildNode;
 
                 if(whildcardNamespace == null)
@@ -110,7 +125,7 @@ public class PathRouter {
                     childNode = new PathNode();
                     childWildNode = childNode;
                 }
-                whildcardNamespace.add(nodeName.substring(1,nodeName.length()-1));
+                whildcardNamespace.add(nodeName);
                 return childNode.createTree(pathIter,whildcardNamespace);
             }
             childNode = childNodes.get(nodeName);
@@ -179,7 +194,23 @@ public class PathRouter {
                         paramIdxMap[i] = -1;
                     }
                     else if(String.class.isAssignableFrom(actionParam[i].getType())){
-                        int paramIdx = whildcardNamespace.indexOf(actionParam[i].getName());
+
+                        String urlPatternParamName = null;
+                        Annotation[] annotations = actionParam[i].getAnnotations();
+                        for(Annotation anno : annotations){
+                            if(INP.class.isAssignableFrom(anno.annotationType())){
+                                urlPatternParamName = INP.class.cast(anno).value();
+                                break;
+                            }
+                        }
+
+                        if(urlPatternParamName == null)
+                            throw new MalformedParametersException("Parameter should be annotated by @INP");
+
+                        int paramIdx = whildcardNamespace != null ?
+                                            whildcardNamespace.indexOf(urlPatternParamName) :
+                                            -1;
+
                         if(paramIdx < 0)
                             throw new MalformedObjectNameException("can not find parameter '"+
                                     actionParam[i].getName()+"' in url pattern");
@@ -190,7 +221,8 @@ public class PathRouter {
                 }
             }
 
-            protected Result invoke(Request req, List<String> param) throws InvocationTargetException, IllegalAccessException {
+            protected Result invoke(Request req, List<String> param)
+                    throws InvocationTargetException, IllegalAccessException {
                 Object[] input = new Object[paramIdxMap.length];
                 for(int i = 0 ; i < input.length ; i++){
                     if(paramIdxMap[i]<0)

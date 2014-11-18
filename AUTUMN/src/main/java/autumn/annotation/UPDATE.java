@@ -11,4 +11,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface POST {}
+public @interface UPDATE {
+    public String path();
+}

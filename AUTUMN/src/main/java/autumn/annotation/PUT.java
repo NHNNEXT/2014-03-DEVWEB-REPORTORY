@@ -11,4 +11,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface UPDATE {}
+public @interface PUT {
+    public String path();
+}

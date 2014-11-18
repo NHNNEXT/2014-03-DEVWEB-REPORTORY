@@ -2,6 +2,7 @@ package autumn.route;
 
 import autumn.Request;
 import autumn.Result;
+import autumn.annotation.INP;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -101,8 +102,8 @@ public class PathRouterTest {
         try{
             Assert.assertTrue(
                     Result.class.isInstance(
-                            root.doAct(new Request(PathRouter.REST_METHOD_ID_GET,
-                                    String.format("/{%s}/{%s}/aaa",testParam1,testParam2)))
+                            root.doAct(new Request(PathRouter.REST_METHOD_ID_POST,
+                                    String.format("/%s/%s/aaa",testParam1,testParam2)))
                     )
             );
         }
@@ -117,8 +118,8 @@ public class PathRouterTest {
         try{
             Assert.assertTrue(
                     Result.class.isInstance(
-                            root.doAct( new Request(PathRouter.REST_METHOD_ID_GET,
-                                    String.format("/{%s}/{%s}/aaa",testParam2,testParam1)))
+                            root.doAct( new Request(PathRouter.REST_METHOD_ID_POST,
+                                    String.format("/%s/%s/aaa",testParam2,testParam1)))
                     )
             );
         }
@@ -134,15 +135,15 @@ public class PathRouterTest {
     }
 
     @SuppressWarnings("FieldCanBeLocal")
-    private String testParam1 = "param1";
+    private static String testParam1 = "param1";
 
     @SuppressWarnings("FieldCanBeLocal")
-    private String testParam2 = "param2";
+    private static String testParam2 = "param2";
 
     @SuppressWarnings("UnusedDeclaration")
-    public static Result dummyMethod_with_param(String a, String b){
-        Assert.assertEquals(a,"param1");
-        Assert.assertEquals(a,"param2");
+    public static Result dummyMethod_with_param(@INP("a") String a, @INP("b") String b){
+        Assert.assertEquals(a,testParam1);
+        Assert.assertEquals(b,testParam2);
         return new Result() {};
     }
 

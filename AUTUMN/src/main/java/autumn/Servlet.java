@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * Created by infinitu on 14. 10. 31..
  */
-@WebServlet("/*")
+@WebServlet("/aaa/bbb")
 public class Servlet extends HttpServlet{
 
 

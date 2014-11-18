@@ -6,9 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by infinitu on 14. 10. 31..
+ * Created by infinitu on 14. 11. 18..
  */
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface DELETE {}
+@Target(ElementType.PARAMETER)
+public @interface INP {
+    public String value();
+}
