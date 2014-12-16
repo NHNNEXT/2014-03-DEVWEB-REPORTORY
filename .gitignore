@@ -94,6 +94,7 @@ atlassian-ide-plugin.xml
 # Crashlytics plugin (for Android Studio and IntelliJ)
 com_crashlytics_export_strings.xml
 
-AUTUMN/gradlew
-AUTUMN/gradlew.bat
-AUTUMN/build
+gradlew
+gradlew.bat
+build
+gradle/*

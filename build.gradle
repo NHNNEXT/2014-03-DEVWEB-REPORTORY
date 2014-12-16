@@ -1,0 +1,8 @@
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
