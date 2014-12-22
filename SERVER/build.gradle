@@ -17,5 +17,4 @@ dependencies {
 war {
     webInf {from 'src/main/resources'}
     webXml = new File(project(':AUTUMN').webAppDir.absolutePath,"/WEB-INF/web.xml")
-
 }
