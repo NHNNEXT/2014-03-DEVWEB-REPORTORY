@@ -2,6 +2,7 @@ package models.tables.joined;
 
 import autumn.database.Column;
 import autumn.database.Condition;
+import autumn.database.JoinQuery;
 import autumn.database.JoinTable;
 import models.StudentUser;
 import models.tables.StudentTable;
@@ -30,5 +31,12 @@ public class StudentUserJoin extends JoinTable<UserTable,StudentTable, StudentUs
     @Override
     public Condition on(UserTable userTable, StudentTable studentTable) {
         return (userTable.uid) .isEqualTo  (studentTable.uid);
+    }
+
+    private static JoinQuery<StudentUserJoin> tQuery;
+    public static JoinQuery<StudentUserJoin> getQuery() {
+        if(tQuery==null)
+            tQuery = new JoinQuery<>(StudentUserJoin.class);
+        return tQuery;
     }
 }

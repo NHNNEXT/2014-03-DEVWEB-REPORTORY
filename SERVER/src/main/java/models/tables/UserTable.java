@@ -24,7 +24,7 @@ public class UserTable extends Table<User>{
     public UserTable() throws NoSuchFieldException {super(User.class);}
 
     private static TableQuery<UserTable> tQuery;
-    public static TableQuery<UserTable> getQuery() throws NoSuchFieldException {
+    public static TableQuery<UserTable> getQuery() {
         if(tQuery==null)
             tQuery = new TableQuery<>(UserTable.class);
         return tQuery;

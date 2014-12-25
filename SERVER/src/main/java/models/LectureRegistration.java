@@ -1,11 +1,13 @@
 package models;
 
+import util.JsonDataSerializable;
+
 import java.util.Date;
 
 /**
  * Created by infinitu on 14. 12. 25..
  */
-public class LectureRegistration {
+public class LectureRegistration extends JsonDataSerializable {
 
     public int      uid     ;
     public int      lid     ;

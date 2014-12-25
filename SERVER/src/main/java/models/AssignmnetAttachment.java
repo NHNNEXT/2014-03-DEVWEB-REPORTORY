@@ -1,9 +1,11 @@
 package models;
 
+import util.JsonDataSerializable;
+
 /**
  * Created by infinitu on 14. 12. 25..
  */
-public class AssignmnetAttachment {
+public class AssignmnetAttachment extends JsonDataSerializable {
 
     public int      aid     ;
     public String   hashcode;

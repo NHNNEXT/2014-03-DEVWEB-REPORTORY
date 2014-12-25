@@ -1,11 +1,13 @@
 package models;
 
+import util.JsonDataSerializable;
+
 import java.sql.Date;
 
 /**
  * Created by infinitu on 14. 12. 25..
  */
-public class User {
+public class User extends JsonDataSerializable {
 
     public int      uid;
     public String   name;

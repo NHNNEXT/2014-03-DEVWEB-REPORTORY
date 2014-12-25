@@ -26,7 +26,7 @@ public class LectureTable extends Table<Lecture>{
     }
 
     private static TableQuery<LectureTable> tQuery;
-    public static TableQuery<LectureTable> getQuery() throws NoSuchFieldException {
+    public static TableQuery<LectureTable> getQuery() {
         if(tQuery==null)
             tQuery = new TableQuery<>(LectureTable.class);
         return tQuery;

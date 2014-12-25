@@ -28,7 +28,7 @@ public class SubmisstionTable extends Table<Submisstion>{
     }
 
     private static TableQuery<SubmisstionTable> tQuery;
-    public static TableQuery<SubmisstionTable> getQuery() throws NoSuchFieldException {
+    public static TableQuery<SubmisstionTable> getQuery() {
         if(tQuery==null)
             tQuery = new TableQuery<>(SubmisstionTable.class);
         return tQuery;

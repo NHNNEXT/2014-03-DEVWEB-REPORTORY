@@ -22,7 +22,7 @@ public class AttachmentsTable extends Table<Attachment>{
     }
 
     private static TableQuery<AttachmentsTable> tQuery;
-    public static TableQuery<AttachmentsTable> getQuery() throws NoSuchFieldException {
+    public static TableQuery<AttachmentsTable> getQuery() {
         if(tQuery==null)
             tQuery = new TableQuery<>(AttachmentsTable.class);
         return tQuery;

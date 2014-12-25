@@ -1,11 +1,13 @@
 package models;
 
+import util.JsonDataSerializable;
+
 import java.sql.Timestamp;
 
 /**
  * Created by infinitu on 14. 12. 25..
  */
-public class Assignment {
+public class Assignment extends JsonDataSerializable {
 
     public int aid;
     public int lid;

@@ -27,7 +27,7 @@ public class AssignmentTable extends Table<Assignment>{
     }
 
     private static TableQuery<AssignmentTable> tQuery;
-    public static TableQuery<AssignmentTable> getQuery() throws NoSuchFieldException {
+    public static TableQuery<AssignmentTable> getQuery() {
         if(tQuery==null)
             tQuery = new TableQuery<>(AssignmentTable.class);
         return tQuery;

@@ -22,7 +22,7 @@ public class StudentTable extends Table<Student>{
     }
 
     private static TableQuery<StudentTable> tQuery;
-    public static TableQuery<StudentTable> getQuery() throws NoSuchFieldException {
+    public static TableQuery<StudentTable> getQuery() {
         if(tQuery==null)
             tQuery = new TableQuery<>(StudentTable.class);
         return tQuery;

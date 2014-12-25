@@ -21,7 +21,7 @@ public class AssignmnetAttachmentTable extends Table<AssignmnetAttachment>{
     }
 
     private static TableQuery<AssignmnetAttachmentTable> tQuery;
-    public static TableQuery<AssignmnetAttachmentTable> getQuery() throws NoSuchFieldException {
+    public static TableQuery<AssignmnetAttachmentTable> getQuery() {
         if(tQuery==null)
             tQuery = new TableQuery<>(AssignmnetAttachmentTable.class);
         return tQuery;
