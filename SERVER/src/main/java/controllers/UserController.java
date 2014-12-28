@@ -16,6 +16,7 @@ import util.JsonDataSerializable;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -106,7 +107,7 @@ public class UserController {
 
     private static int insertUserRow(Request req, User record) throws SQLException {
         record.passwd = record.passwd;//todo
-        record.join_date = new Date(System.currentTimeMillis());
+        record.join_date = new Timestamp(System.currentTimeMillis());
         return UserTable.getQuery()
                         .insertRetunningGenKey(req.getDBConnection(), new User[]{record})
                         .get(0);
@@ -143,7 +144,7 @@ public class UserController {
     }
 
     protected static ProfessorUser getProfLoginData(Request req){
-        if(!isStudentUser(req))
+        if(!isPrefessorUser(req))
             return null;
         return JsonDataSerializable.deserialize(ProfessorUser.class,(String)req.getSession("loginData"));
     }

@@ -3,6 +3,7 @@ package models;
 import util.JsonDataSerializable;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  * Created by infinitu on 14. 12. 25..
@@ -14,6 +15,6 @@ public class User extends JsonDataSerializable {
     public String   email;
     public String   passwd;
     public String   third_auth;
-    public Date     join_date;
+    public Timestamp join_date;
 
 }

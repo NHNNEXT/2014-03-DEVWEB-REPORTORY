@@ -7,6 +7,7 @@ import autumn.database.TableQuery;
 import models.User;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  * Created by infinitu on 14. 12. 25..
@@ -19,7 +20,7 @@ public class UserTable extends Table<User>{
     public Column<String>   email         = stringColumn("email");
     public Column<String>   passwd        = stringColumn("passwd");
     public Column<String>   third_auth    = stringColumn("3rd_auth");
-    public Column<Date>     join_date     = dateColumn("join_date");
+    public Column<Timestamp>     join_date     = timestampColumn("join_date");
 
     public UserTable() throws NoSuchFieldException {super(User.class);}
 

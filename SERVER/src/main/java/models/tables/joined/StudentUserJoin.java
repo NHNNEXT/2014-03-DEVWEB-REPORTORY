@@ -9,6 +9,7 @@ import models.tables.StudentTable;
 import models.tables.UserTable;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  * Created by infinitu on 14. 12. 25..
@@ -20,7 +21,7 @@ public class StudentUserJoin extends JoinTable<UserTable,StudentTable, StudentUs
     public Column<String>   email       = left.email;
     public Column<String>   passwd      = left.passwd;
     public Column<String>   third_auth  = left.third_auth;
-    public Column<Date>     join_date   = left.join_date;
+    public Column<Timestamp>     join_date   = left.join_date;
     public Column<String>   defIdentity = right.defIdentity;
     public Column<String>   defMajor    = right.defMajor;
 
