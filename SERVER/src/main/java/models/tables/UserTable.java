@@ -23,10 +23,16 @@ public class UserTable extends Table<User>{
 
     public UserTable() throws NoSuchFieldException {super(User.class);}
 
-    private static TableQuery<UserTable> tQuery;
+    private static ThreadLocal<TableQuery<UserTable>> tQuery;
     public static TableQuery<UserTable> getQuery() {
-        if(tQuery==null)
-            tQuery = new TableQuery<>(UserTable.class);
-        return tQuery;
+        if (tQuery == null)
+            tQuery = new ThreadLocal<TableQuery<UserTable>>() {
+                @Override
+                protected TableQuery<UserTable> initialValue() {
+                    return new TableQuery<>(UserTable.class);
+                }
+            };
+
+        return tQuery.get();
     }
 }

@@ -21,11 +21,17 @@ public class StudentTable extends Table<Student>{
         super(Student.class);
     }
 
-    private static TableQuery<StudentTable> tQuery;
+    private static ThreadLocal<TableQuery<StudentTable>> tQuery;
     public static TableQuery<StudentTable> getQuery() {
-        if(tQuery==null)
-            tQuery = new TableQuery<>(StudentTable.class);
-        return tQuery;
+        if (tQuery == null)
+            tQuery = new ThreadLocal<TableQuery<StudentTable>>() {
+                @Override
+                protected TableQuery<StudentTable> initialValue() {
+                    return new TableQuery<>(StudentTable.class);
+                }
+            };
+
+        return tQuery.get();
     }
 
 }

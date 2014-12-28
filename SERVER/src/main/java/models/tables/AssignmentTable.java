@@ -26,11 +26,18 @@ public class AssignmentTable extends Table<Assignment>{
         super(Assignment.class);
     }
 
-    private static TableQuery<AssignmentTable> tQuery;
+
+    private static ThreadLocal<TableQuery<AssignmentTable>> tQuery;
     public static TableQuery<AssignmentTable> getQuery() {
-        if(tQuery==null)
-            tQuery = new TableQuery<>(AssignmentTable.class);
-        return tQuery;
+        if (tQuery == null)
+            tQuery = new ThreadLocal<TableQuery<AssignmentTable>>() {
+                @Override
+                protected TableQuery<AssignmentTable> initialValue() {
+                    return new TableQuery<>(AssignmentTable.class);
+                }
+            };
+
+        return tQuery.get();
     }
 
 }

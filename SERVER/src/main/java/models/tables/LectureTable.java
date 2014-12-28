@@ -25,11 +25,17 @@ public class LectureTable extends Table<Lecture>{
         super(Lecture.class);
     }
 
-    private static TableQuery<LectureTable> tQuery;
+    private static ThreadLocal<TableQuery<LectureTable>> tQuery;
     public static TableQuery<LectureTable> getQuery() {
-        if(tQuery==null)
-            tQuery = new TableQuery<>(LectureTable.class);
-        return tQuery;
+        if (tQuery == null)
+            tQuery = new ThreadLocal<TableQuery<LectureTable>>() {
+                @Override
+                protected TableQuery<LectureTable> initialValue() {
+                    return new TableQuery<>(LectureTable.class);
+                }
+            };
+
+        return tQuery.get();
     }
 
 }

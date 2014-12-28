@@ -27,10 +27,16 @@ public class SubmisstionTable extends Table<Submisstion>{
         super(Submisstion.class);
     }
 
-    private static TableQuery<SubmisstionTable> tQuery;
+    private static ThreadLocal<TableQuery<SubmisstionTable>> tQuery;
     public static TableQuery<SubmisstionTable> getQuery() {
-        if(tQuery==null)
-            tQuery = new TableQuery<>(SubmisstionTable.class);
-        return tQuery;
+        if (tQuery == null)
+            tQuery = new ThreadLocal<TableQuery<SubmisstionTable>>() {
+                @Override
+                protected TableQuery<SubmisstionTable> initialValue() {
+                    return new TableQuery<>(SubmisstionTable.class);
+                }
+            };
+
+        return tQuery.get();
     }
 }

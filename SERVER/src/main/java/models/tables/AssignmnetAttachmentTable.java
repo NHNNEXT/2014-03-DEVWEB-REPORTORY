@@ -20,11 +20,17 @@ public class AssignmnetAttachmentTable extends Table<AssignmnetAttachment>{
         super(AssignmnetAttachment.class);
     }
 
-    private static TableQuery<AssignmnetAttachmentTable> tQuery;
+    private static ThreadLocal<TableQuery<AssignmnetAttachmentTable>> tQuery;
     public static TableQuery<AssignmnetAttachmentTable> getQuery() {
-        if(tQuery==null)
-            tQuery = new TableQuery<>(AssignmnetAttachmentTable.class);
-        return tQuery;
+        if (tQuery == null)
+            tQuery = new ThreadLocal<TableQuery<AssignmnetAttachmentTable>>() {
+                @Override
+                protected TableQuery<AssignmnetAttachmentTable> initialValue() {
+                    return new TableQuery<>(AssignmnetAttachmentTable.class);
+                }
+            };
+
+        return tQuery.get();
     }
 
 }

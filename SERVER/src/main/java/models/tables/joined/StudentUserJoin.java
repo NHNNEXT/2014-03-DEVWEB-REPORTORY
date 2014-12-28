@@ -33,10 +33,15 @@ public class StudentUserJoin extends JoinTable<UserTable,StudentTable, StudentUs
         return (userTable.uid) .isEqualTo  (studentTable.uid);
     }
 
-    private static JoinQuery<StudentUserJoin> tQuery;
+    private static ThreadLocal<JoinQuery<StudentUserJoin>> tQuery;
     public static JoinQuery<StudentUserJoin> getQuery() {
-        if(tQuery==null)
-            tQuery = new JoinQuery<>(StudentUserJoin.class);
-        return tQuery;
+        if (tQuery == null)
+            tQuery = new ThreadLocal<JoinQuery<StudentUserJoin>>() {
+                @Override
+                protected JoinQuery<StudentUserJoin> initialValue() {
+                    return new JoinQuery<>(StudentUserJoin.class);
+                }
+            };
+        return tQuery.get();
     }
 }

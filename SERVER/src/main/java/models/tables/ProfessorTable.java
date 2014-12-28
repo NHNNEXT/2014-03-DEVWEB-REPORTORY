@@ -20,11 +20,17 @@ public class ProfessorTable extends Table<Professor> {
         super(Professor.class);
     }
 
-    private static TableQuery<ProfessorTable> tQuery;
+    private static ThreadLocal<TableQuery<ProfessorTable>> tQuery;
     public static TableQuery<ProfessorTable> getQuery() {
-        if(tQuery==null)
-            tQuery = new TableQuery<>(ProfessorTable.class);
-        return tQuery;
+        if (tQuery == null)
+            tQuery = new ThreadLocal<TableQuery<ProfessorTable>>() {
+                @Override
+                protected TableQuery<ProfessorTable> initialValue() {
+                    return new TableQuery<>(ProfessorTable.class);
+                }
+            };
+
+        return tQuery.get();
     }
 
 }

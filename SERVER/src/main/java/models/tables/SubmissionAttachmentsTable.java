@@ -21,11 +21,17 @@ public class SubmissionAttachmentsTable extends Table<SubmissionAttachment>{
         super(SubmissionAttachment.class);
     }
 
-    private static TableQuery<SubmissionAttachmentsTable> tQuery;
+    private static ThreadLocal<TableQuery<SubmissionAttachmentsTable>> tQuery;
     public static TableQuery<SubmissionAttachmentsTable> getQuery() {
-        if(tQuery==null)
-            tQuery = new TableQuery<>(SubmissionAttachmentsTable.class);
-        return tQuery;
+        if (tQuery == null)
+            tQuery = new ThreadLocal<TableQuery<SubmissionAttachmentsTable>>() {
+                @Override
+                protected TableQuery<SubmissionAttachmentsTable> initialValue() {
+                    return new TableQuery<>(SubmissionAttachmentsTable.class);
+                }
+            };
+
+        return tQuery.get();
     }
 
 }
