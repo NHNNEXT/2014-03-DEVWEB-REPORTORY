@@ -15,6 +15,7 @@ public class AssignmnetAttachmentTable extends Table<AssignmnetAttachment>{
 
     public Column<Integer>  aid      = intColumn("aid");
     public Column<String >  hashcode = stringColumn("hashcode_id");
+    public Column<Integer>  owner    = intColumn("owner");
 
     public AssignmnetAttachmentTable() throws NoSuchFieldException {
         super(AssignmnetAttachment.class);
