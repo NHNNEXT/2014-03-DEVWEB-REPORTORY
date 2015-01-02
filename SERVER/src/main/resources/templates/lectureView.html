@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head th:replace="fragments/common :: header" />
+	<body>
+		<nav th:replace="fragments/common :: navbar" />
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-sm-3 col-md-2 sidebar">
+					<ul class="nav nav-sidebar lecture-list">
+						<li><a th:href="@{/lectures/list.do}"><h4>
+							<span class="fui-check"></span>&nbsp;&nbsp;<span th:text="#{text.selectLecture}" />
+						</h4></a></li>
+					</ul>
+				</div>
+				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+					<div class="page-header">
+						<h1><span th:text="${lecture.title}" class="lecture-title" /></h1>
+					</div>
+
+					<div class="assignment-list list-group" />
+				</div>
+			</div>
+		</div><!-- /.container -->
+
+		<!-- Bootstrap core JavaScript
+		================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script th:replace="fragments/libs :: jquery" />
+		<script th:replace="fragments/libs :: bootstrap_js" />
+
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			function getLectureId() {
+				return [[${lecture.id}]];
+			}
+
+			function getLectures() {
+				$.ajax({
+					url: [[@{/}]] + "lectures",
+					dataType: "json",
+					success: function( lectures ) {
+						//$( ".lecture-list" ).empty();
+						$.each( lectures, function( idx, lecture ) {
+							addLectureToNav( lecture );
+						});
+					}
+				});
+			}
+
+			function getAssignments() {
+				$.ajax({
+					url: "./" + "assignments",
+					dataType: "json",
+					success: function( assignments ) {
+						$( ".assignment-list" ).empty();
+						$.each( assignments, function( idx, assignment ) {
+							addAssignmentToPage( assignment );
+						});
+					}
+				});
+			}
+
+			function addLectureToNav( lecture ) {
+				console.log( lecture );
+				var lectureLink = $( "<a/>" );
+				lectureLink = lectureLink.addClass( "lecture" ).text( lecture.title ).attr( "href", [[@{/}]] + "lectures" + "/" + lecture.id + "/view.do" );
+				lectureItem = $( "<li/>" );
+				if( lecture.id == getLectureId() ) {
+					lectureItem = lectureItem.addClass( "active" );
+					lectureLink = lectureLink.attr( "href", "#" );
+				}
+				$( ".nav.lecture-list" ).append( lectureItem.append( lectureLink ) );
+			}
+
+			function addAssignmentToPage( assignment ) {
+				console.log( assignment );
+				var assignmentItem = $( "<a/>" ).addClass( "list-group-item" );
+				assignmentItem = assignmentItem.addClass( "assignment" ).text( assignment.title );
+				$( ".assignment-list" ).append( assignmentItem.attr( "href", [[@{/}]] + "assignments" + "/" + assignment.id + "/view.do" ) );
+			}
+
+			$( document ).ready( getLectures );
+			$( document ).ready( getAssignments );
+		/*]]>*/
+		</script>
+	</body>
+</html>
