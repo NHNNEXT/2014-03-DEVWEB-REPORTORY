@@ -6,7 +6,6 @@ import autumn.database.Table;
 import autumn.database.TableQuery;
 import models.User;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 /**

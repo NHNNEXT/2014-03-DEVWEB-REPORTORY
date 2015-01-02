@@ -8,7 +8,6 @@ import models.ProfessorUser;
 import models.tables.ProfessorTable;
 import models.tables.UserTable;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
