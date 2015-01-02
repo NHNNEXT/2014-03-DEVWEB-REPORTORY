@@ -13,7 +13,7 @@ import models.Attachment;
 public class AttachmentsTable extends Table<Attachment>{
     public Column<String >  hashcode_id = stringColumn("hashcode_id");
     public Column<String >  directory   = stringColumn("directory");
-    public Column<String >  filenem     = stringColumn("filename");
+    public Column<String >  filename     = stringColumn("filename");
     public Column<String >  type        = stringColumn("type");
     public Column<Integer>  owner       = intColumn("owner");
 

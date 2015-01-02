@@ -1,15 +1,18 @@
 package util;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Created by infinitu on 14. 12. 25..
  */
 public abstract class JsonDataSerializable {
-    private static ThreadLocal<Gson> gson = new ThreadLocal<Gson>(){
+    protected static ThreadLocal<Gson> gson = new ThreadLocal<Gson>(){
         @Override
         protected Gson initialValue() {
-            return new Gson();
+            GsonBuilder gb = new GsonBuilder();
+            gb.excludeFieldsWithoutExposeAnnotation();
+            return gb.create();
         }
     };
 

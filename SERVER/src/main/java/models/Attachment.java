@@ -1,5 +1,6 @@
 package models;
 
+import com.google.gson.annotations.Expose;
 import util.JsonDataSerializable;
 
 /**
@@ -8,9 +9,8 @@ import util.JsonDataSerializable;
 public class Attachment extends JsonDataSerializable {
 
     public String   hashcode_id ;
-    public String   directory   ;
-    public String   filenem     ;
-    public String   type        ;
-    public int      owner       ;
-
+    @Expose public String   directory   ;
+    public String filename;
+    @Expose public String   type        ;
+    @Expose public int      owner       ;
 }

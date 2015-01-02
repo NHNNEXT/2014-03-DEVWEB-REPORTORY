@@ -16,7 +16,6 @@ import reportroy.attachment.UploadRequestForm;
 import util.Utils;
 
 import java.io.*;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -86,8 +85,8 @@ public class AttachmentController {
 
         if (st == ed && st == am) {
             map.remove(auth);
-            String hash = finishUploade(req, obj);
-            return Result.Ok.plainText(hash);
+            Attachment attachment = finishUploade(req, obj);
+            return Result.Ok.json(attachment);
         }
         
         if(length != ed-st+1 || am != obj.getSize())
@@ -99,7 +98,7 @@ public class AttachmentController {
         return Result.Ok.plainText("ok.");
     }
 
-    private static String finishUploade(Request req, AttachmentStatus status) throws Exception {
+    private static Attachment finishUploade(Request req, AttachmentStatus status) throws Exception {
         File file = status.getFile();
         String hash = status.calcFileHash();
         String encodedName = URLEncoder.encode(status.getFilename(),"UTF-8");
@@ -110,7 +109,7 @@ public class AttachmentController {
             throw new Exception("Moving File is Failed");
 
         Attachment attachment = new Attachment();
-        attachment.filenem = encodedName;
+        attachment.filename = encodedName;
         attachment.directory = dest.getAbsolutePath();
         attachment.hashcode_id = hash;
         attachment.owner = status.getOwnerId();
@@ -118,7 +117,7 @@ public class AttachmentController {
         if(res < 1)
             throw new Exception("insertionException,");
         
-        return hash;
+        return attachment;
     }
 
     private static String newPathStr(String key){
