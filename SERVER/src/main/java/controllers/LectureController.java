@@ -19,11 +19,11 @@ public class LectureController {
         return Result.Ok.template("lectureList");
     }
 
-    @GET("/lectures/:id")
+    @GET("/lectures/:lectureId")
     public static Result getLectureView(Request req,
-                                        @INP("id") String id) throws SQLException {
+                                        @INP("lectureId") String lectureId) throws SQLException {
         if(req.getAcceptType().equals("application/json")) {
-            return LectureRestController.viewLecture(req, id);
+            return LectureRestController.viewLecture(req, lectureId);
         }
         return Result.Ok.template("lectureView");
     }

@@ -7,7 +7,7 @@ import java.sql.Date;
 /**
  * Created by infinitu on 14. 12. 25..
  */
-public class LectureAndProfessor extends JsonDataSerializable {
+public class LectureDetail extends JsonDataSerializable {
 
     public int      lid ;
     public String   lecturename;

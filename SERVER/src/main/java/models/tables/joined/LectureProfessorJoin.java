@@ -4,7 +4,7 @@ import autumn.database.Column;
 import autumn.database.Condition;
 import autumn.database.JoinQuery;
 import autumn.database.JoinTable;
-import models.LectureAndProfessor;
+import models.LectureDetail;
 import models.tables.LectureTable;
 
 import java.sql.Date;
@@ -12,7 +12,7 @@ import java.sql.Date;
 /**
  * Created by infinitu on 14. 12. 25..
  */
-public class LectureProfessorJoin extends JoinTable<ProfessorUserJoin,LectureTable,LectureAndProfessor>{
+public class LectureProfessorJoin extends JoinTable<ProfessorUserJoin,LectureTable, LectureDetail>{
 
     public Column<Integer>  lid  = right.lid;
     public Column<Integer>  prof_uid = left.uid;
@@ -27,7 +27,7 @@ public class LectureProfessorJoin extends JoinTable<ProfessorUserJoin,LectureTab
 
 
     public LectureProfessorJoin() throws NoSuchFieldException {
-        super(new ProfessorUserJoin(), new LectureTable(), LectureAndProfessor.class);
+        super(new ProfessorUserJoin(), new LectureTable(), LectureDetail.class);
     }
 
     @Override

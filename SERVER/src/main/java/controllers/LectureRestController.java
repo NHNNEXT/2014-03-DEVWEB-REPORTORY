@@ -2,153 +2,141 @@ package controllers;
 
 import autumn.Request;
 import autumn.Result;
-import autumn.annotation.*;
-import autumn.result.JsonResult;
-import com.google.gson.JsonElement;
+import autumn.annotation.Controller;
+import autumn.annotation.DELETE;
+import autumn.annotation.INP;
+import autumn.annotation.POST;
+import autumn.header.Header;
+import controllers.services.LectureService;
 import controllers.services.UserService;
-import models.*;
-import models.tables.LectureRegistrationTable;
-import models.tables.LectureTable;
-import models.tables.joined.LectureProfessorJoin;
+import models.Lecture;
+import models.LectureRegistration;
+import models.StudentUser;
+import util.JsonResult;
+import util.exceptions.BadRequestException;
+import util.exceptions.InternalServerErrorException;
+import util.exceptions.NotFoundException;
 
 import java.sql.SQLException;
-import java.util.List;
-
-/**
- * Created by infinitu on 14. 12. 26..
- */
 
 @Controller
 public class LectureRestController {
 
     // @GET("/lectures")
     public static Result listLecture(Request req) throws SQLException {
-        String query = req.getUrlQueryParam("search");
-        if(UserService.isPrefessorUser(req))
-            return professorOwnLectures(req);
-        else if(UserService.isStudentUser(req)){
-            return findLecture(req,query);
+        if (UserService.isProfessorUser(req)) {
+            return Result.Ok.json(LectureService.getLecturesByProfessor(UserService.getProfLoginData(req).uid, req.getDBConnection()));
         }
-        return Result.Forbidden.plainText("login required request.");
+        else if (UserService.isStudentUser(req)){
+            return Result.Ok.json(LectureService.getLecturesByQuery(req.getUrlQueryParam("search"), req.getDBConnection()));
+        }
+        return Result.Forbidden.json(new JsonResult("Login required"));
     }
-
-    private static Result professorOwnLectures(Request req) throws SQLException {
-        ProfessorUser prof = UserService.getProfLoginData(req);
-        List<Lecture> lectureList =
-                LectureTable.getQuery()
-                        .where((t) ->
-                                (t.prof).isEqualTo(prof.uid))
-                        .list(req.getDBConnection());
-
-        return Result.Ok.json(lectureList);
-    }
-
-    private static Result findLecture(Request req, String query) throws SQLException {
-        List<LectureAndProfessor> list = LectureProfessorJoin.getQuery().where((t)->(t.lecturename).isLike(query)).list(req.getDBConnection());
-        return Result.Ok.json(list);
-    }
-
 
     // @GET("/lectures/:lectureId")
-    public static Result viewLecture(Request req,
-                                     @INP("lectureId") String lectureId) throws SQLException {
-        if(!(UserService.isStudentUser(req)|| UserService.isPrefessorUser(req)))
-            return Result.Forbidden.plainText("Student and Professor can exit a lecture.");
-        LectureAndProfessor lec = LectureProfessorJoin.getQuery().where((t) -> (t.lid).isEqualTo(Integer.parseInt(lectureId))).first(req.getDBConnection());
-        if(lec == null)
-            return Result.NotFound.plainText("no such lecture");
-        return Result.Ok.json(lec);
-    }
+    public static Result viewLecture(Request req, String lectureId) throws SQLException {
+        if (!(UserService.isStudentUser(req) || UserService.isProfessorUser(req)))
+            return Result.Forbidden.json(new JsonResult("Permission denied"));
 
+        try {
+            return Result.Ok.json(LectureService.getLecture(Integer.parseInt(lectureId), req.getDBConnection()));
+        } catch (NotFoundException e) {
+            return Result.NotFound.json(new JsonResult(e.getMessage()));
+        }
+    }
 
     @POST("/lectures")
     public static Result createLecture(Request req) throws SQLException {
+        if (!UserService.isProfessorUser(req))
+            return Result.Forbidden.json(new JsonResult("Only professors can create lecture."));
 
-        if(!UserService.isPrefessorUser(req))
-            return Result.Forbidden.plainText("Lecture should be created by only professor account.");
-
-        Lecture input;
+        Lecture lecture;
         try {
-            input = req.body().asJson().mapping(Lecture.class);
-        } catch(Exception e){
-            return Result.BadRequest.plainText("not allowed Create Form");
+            lecture = req.body().asJson().mapping(Lecture.class);
+
+            if (lecture == null) {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            return Result.BadRequest.json(new JsonResult("Invalid request form"));
         }
-        if(input == null)
-            return Result.BadRequest.plainText("not allowed Create Form");
 
-        ProfessorUser prof = UserService.getProfLoginData(req);
-        input.prof = prof.uid;
-        Integer idx = LectureTable.getQuery().insertReturningGenKey(req.getDBConnection(), input);
-        if(idx == null)
-            return Result.InternalServerError.plainText("failed");
+        lecture.prof = UserService.getProfLoginData(req).uid;
 
-        return Result.Ok.plainText("success " + idx);
+        try {
+           Integer generatedLectureId = LectureService.createLecture(lecture, req.getDBConnection());
+            return Result.Ok.json(new JsonResult("Lecture created")).
+                    with(new Header(Header.LOCATION, "/lectures" + generatedLectureId));
+        } catch (InternalServerErrorException e) {
+            return Result.InternalServerError.json(new JsonResult(e.getMessage()));
+        }
     }
-
 
     @DELETE("/lectures/:lectureId")
-    public static Result createLecture(Request req,
+    public static Result deleteLecture(Request req,
                                        @INP("lectureId") String lectureId) throws SQLException {
+        if (!UserService.isProfessorUser(req))
+            return Result.Forbidden.json(new JsonResult("Only professors can delete lecture."));
 
-        if (!UserService.isPrefessorUser(req))
-            return Result.Forbidden.plainText("Lecture should be delete by only professor account.");
-
-        int profuid = UserService.getProfLoginData(req).uid;
-        int delline = LectureTable.getQuery()
-                .where((t) -> (t.lid).isEqualTo(Integer.parseInt(lectureId)).and(
-                        (t.prof).isEqualTo(profuid)))
-                .delete(req.getDBConnection());
-        if(delline<1)
-            Result.BadRequest.plainText("no such lecture");
-        return Result.Ok.plainText("successfully");
+        try {
+            LectureService.deleteLecture(Integer.parseInt(lectureId), UserService.getProfLoginData(req).uid, req.getDBConnection());
+            return Result.Ok.json(new JsonResult("Lecture deleted"));
+        } catch (BadRequestException e) {
+            return Result.BadRequest.json(new JsonResult(e.getMessage()));
+        }
     }
-
 
     @POST("/lectures/:lectureId/join")
     public static Result joinLecture(Request req,
                                      @INP("lectureId") String lectureId) throws SQLException {
-        if(!UserService.isStudentUser(req))
-            return Result.Forbidden.plainText("Only Student can join a lecture.");
-
-        LectureRegistration input;
-        try {
-            input = req.body().asJson().mapping(LectureRegistration.class);
-        } catch(Exception e){
-            return Result.BadRequest.plainText("not allowed Join Form");
+        if (!UserService.isStudentUser(req)) {
+            return Result.Forbidden.json(new JsonResult("Only students can join lecture."));
         }
 
-        input.lid = Integer.parseInt(lectureId);
-        input.accepted = false;
+        LectureRegistration lectureRegistration;
+        try {
+            lectureRegistration = req.body().asJson().mapping(LectureRegistration.class);
+
+            if (lectureRegistration == null) {
+                throw new Exception();
+            }
+        } catch (Exception e){
+            return Result.BadRequest.json(new JsonResult("Invalid request form"));
+        }
+
+        lectureRegistration.lid = Integer.parseInt(lectureId);
+        lectureRegistration.accepted = false;
 
         StudentUser stu = UserService.getStuLoginData(req);
-        if(input.major == null)input.major=stu.defMajor;
-        if(input.identity == null)input.identity = stu.defIdentity;
 
-        int line = LectureTable.getQuery().insert(req.getDBConnection(),input);
-        if(line<1)
-            return Result.BadRequest.plainText("invalid lecture");
-        return Result.Ok.plainText("successful");
+        if (lectureRegistration.major == null) {
+            lectureRegistration.major = stu.defMajor;
+        }
+        if (lectureRegistration.identity == null) {
+            lectureRegistration.identity = stu.defIdentity;
+        }
+
+        try {
+            LectureService.joinLecture(lectureRegistration, req.getDBConnection());
+            return Result.Ok.json(new JsonResult("Successfully joined"));
+        } catch (BadRequestException e) {
+            return Result.BadRequest.json(new JsonResult(e.getMessage()));
+        }
     }
 
-
-    @POST("/lectures/:lectureId/exit")
-    public static Result exitLecture(Request req,
+    @POST("/lectures/:lectureId/leave")
+    public static Result leaveLecture(Request req,
                                      @INP("lectureId") String lectureId) throws SQLException {
-        if(!UserService.isStudentUser(req))
-            return Result.Forbidden.plainText("Only Student can exit a lecture.");
+        if (!UserService.isStudentUser(req)) {
+            return Result.Forbidden.json(new JsonResult("Only students can leave lecture."));
+        }
 
-        int lid = Integer.parseInt(lectureId);
+        try {
+            LectureService.leaveLecture(Integer.parseInt(lectureId), UserService.getStuLoginData(req).uid, req.getDBConnection());
+            return Result.Ok.json(new JsonResult("Successfully leaved"));
+        } catch (BadRequestException e) {
+            return Result.BadRequest.json(new JsonResult(e.getMessage()));
+        }
 
-        StudentUser stu = UserService.getStuLoginData(req);
-
-        int line =
-                LectureRegistrationTable.getQuery()
-                        .where((t) ->
-                                (t.lid).isEqualTo(lid).and(
-                                        (t.uid).isEqualTo(stu.uid)))
-                        .delete(req.getDBConnection());
-        if(line<1)
-            return Result.BadRequest.plainText("invalid registration");
-        return Result.Ok.plainText("successful");
     }
 }
