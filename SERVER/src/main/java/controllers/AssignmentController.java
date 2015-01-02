@@ -13,7 +13,7 @@ public class AssignmentController {
 
     @GET("/lectures/:lectureId/assignments")
     public static Result getAssignmentList(Request req,
-                                           @INP("lectureId") String lectureId) throws SQLException {
+                                           @INP("lectureId") String lectureId) {
         if(req.getAcceptType().equals("application/json")) {
             return AssignmentRestController.listAssignment(req, lectureId);
         }
@@ -23,7 +23,7 @@ public class AssignmentController {
     @GET("/lectures/:lectureId/assignments/:assignmentId")
     public static Result getAssignmentView(Request req,
                                         @INP("lectureId") String lectureId,
-                                        @INP("assignmentId") String assignmentId) throws SQLException {
+                                        @INP("assignmentId") String assignmentId) {
         if(req.getAcceptType().equals("application/json")) {
             return AssignmentRestController.viewAssignment(req, assignmentId);
         }

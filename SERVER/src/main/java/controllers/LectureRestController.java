@@ -23,18 +23,21 @@ import java.sql.SQLException;
 public class LectureRestController {
 
     // @GET("/lectures")
-    public static Result listLecture(Request req) throws SQLException {
-        if (UserService.isProfessorUser(req)) {
-            return Result.Ok.json(LectureService.getLecturesByProfessor(UserService.getProfLoginData(req).uid, req.getDBConnection()));
+    public static Result listLecture(Request req) {
+        try {
+            if (UserService.isProfessorUser(req)) {
+                return Result.Ok.json(LectureService.getLecturesByProfessor(UserService.getProfLoginData(req).uid, req.getDBConnection()));
+            } else if (UserService.isStudentUser(req)) {
+                return Result.Ok.json(LectureService.getLecturesByQuery(req.getUrlQueryParam("search"), req.getDBConnection()));
+            }
+            return Result.Forbidden.json(new JsonResult("Login required"));
+        } catch (SQLException e) {
+            return Result.InternalServerError.json(new JsonResult(e.getMessage()));
         }
-        else if (UserService.isStudentUser(req)){
-            return Result.Ok.json(LectureService.getLecturesByQuery(req.getUrlQueryParam("search"), req.getDBConnection()));
-        }
-        return Result.Forbidden.json(new JsonResult("Login required"));
     }
 
     // @GET("/lectures/:lectureId")
-    public static Result viewLecture(Request req, String lectureId) throws SQLException {
+    public static Result viewLecture(Request req, String lectureId) {
         if (!(UserService.isStudentUser(req) || UserService.isProfessorUser(req)))
             return Result.Forbidden.json(new JsonResult("Permission denied"));
 
@@ -42,11 +45,13 @@ public class LectureRestController {
             return Result.Ok.json(LectureService.getLecture(Integer.parseInt(lectureId), req.getDBConnection()));
         } catch (NotFoundException e) {
             return Result.NotFound.json(new JsonResult(e.getMessage()));
+        } catch (SQLException e) {
+            return Result.InternalServerError.json(new JsonResult(e.getMessage()));
         }
     }
 
     @POST("/lectures")
-    public static Result createLecture(Request req) throws SQLException {
+    public static Result createLecture(Request req) {
         if (!UserService.isProfessorUser(req))
             return Result.Forbidden.json(new JsonResult("Only professors can create lecture."));
 
@@ -69,12 +74,14 @@ public class LectureRestController {
                     with(new Header(Header.LOCATION, "/lectures" + generatedLectureId));
         } catch (InternalServerErrorException e) {
             return Result.InternalServerError.json(new JsonResult(e.getMessage()));
+        } catch (SQLException e) {
+            return Result.InternalServerError.json(new JsonResult(e.getMessage()));
         }
     }
 
     @DELETE("/lectures/:lectureId")
     public static Result deleteLecture(Request req,
-                                       @INP("lectureId") String lectureId) throws SQLException {
+                                       @INP("lectureId") String lectureId) {
         if (!UserService.isProfessorUser(req))
             return Result.Forbidden.json(new JsonResult("Only professors can delete lecture."));
 
@@ -83,12 +90,14 @@ public class LectureRestController {
             return Result.Ok.json(new JsonResult("Lecture deleted"));
         } catch (BadRequestException e) {
             return Result.BadRequest.json(new JsonResult(e.getMessage()));
+        } catch (SQLException e) {
+            return Result.InternalServerError.json(new JsonResult(e.getMessage()));
         }
     }
 
     @POST("/lectures/:lectureId/join")
     public static Result joinLecture(Request req,
-                                     @INP("lectureId") String lectureId) throws SQLException {
+                                     @INP("lectureId") String lectureId) {
         if (!UserService.isStudentUser(req)) {
             return Result.Forbidden.json(new JsonResult("Only students can join lecture."));
         }
@@ -121,12 +130,14 @@ public class LectureRestController {
             return Result.Ok.json(new JsonResult("Successfully joined"));
         } catch (BadRequestException e) {
             return Result.BadRequest.json(new JsonResult(e.getMessage()));
+        } catch (SQLException e) {
+            return Result.InternalServerError.json(new JsonResult(e.getMessage()));
         }
     }
 
     @POST("/lectures/:lectureId/leave")
     public static Result leaveLecture(Request req,
-                                     @INP("lectureId") String lectureId) throws SQLException {
+                                     @INP("lectureId") String lectureId) {
         if (!UserService.isStudentUser(req)) {
             return Result.Forbidden.json(new JsonResult("Only students can leave lecture."));
         }
@@ -136,7 +147,8 @@ public class LectureRestController {
             return Result.Ok.json(new JsonResult("Successfully leaved"));
         } catch (BadRequestException e) {
             return Result.BadRequest.json(new JsonResult(e.getMessage()));
+        } catch (SQLException e) {
+            return Result.InternalServerError.json(new JsonResult(e.getMessage()));
         }
-
     }
 }

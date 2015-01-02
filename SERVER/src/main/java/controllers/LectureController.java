@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class LectureController {
 
     @GET("/lectures")
-    public static Result getLectureList(Request req) throws SQLException {
+    public static Result getLectureList(Request req) {
         if(req.getAcceptType().equals("application/json")) {
             return LectureRestController.listLecture(req);
         }
@@ -21,7 +21,7 @@ public class LectureController {
 
     @GET("/lectures/:lectureId")
     public static Result getLectureView(Request req,
-                                        @INP("lectureId") String lectureId) throws SQLException {
+                                        @INP("lectureId") String lectureId) {
         if(req.getAcceptType().equals("application/json")) {
             return LectureRestController.viewLecture(req, lectureId);
         }

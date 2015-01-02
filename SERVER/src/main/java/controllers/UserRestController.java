@@ -22,7 +22,7 @@ import java.sql.SQLException;
 public class UserRestController {
 
     @POST("/signin")
-    public static Result signIn(Request req) throws SQLException, UnsupportedEncodingException {
+    public static Result signIn(Request req) throws UnsupportedEncodingException {
 
         String emailParam = req.body().asFormUrlEncoded().getParam("email");
         String passwdParam = req.body().asFormUrlEncoded().getParam("passwd");
@@ -44,11 +44,13 @@ public class UserRestController {
                     );
         } catch (ForbiddenException e) {
             return Result.Forbidden.json(new JsonResult(e.getMessage()));
+        } catch (SQLException e) {
+            return Result.InternalServerError.json(new JsonResult(e.getMessage()));
         }
     }
 
     @POST("/professors")
-    public static Result registerProfessor(Request req) throws SQLException {
+    public static Result registerProfessor(Request req) {
         ProfessorUser professorUser = req.body().asJson().mapping(ProfessorUser.class);
 
         try {
@@ -56,16 +58,21 @@ public class UserRestController {
             return Result.Ok.json(new JsonResult("Professor created"));
         } catch (InternalServerErrorException e) {
             return Result.InternalServerError.json(new JsonResult(e.getMessage()));
+        } catch (SQLException e) {
+            return Result.InternalServerError.json(new JsonResult(e.getMessage()));
         }
     }
+
     @POST("/students")
-    public static Result registerStudent(Request req) throws SQLException {
+    public static Result registerStudent(Request req) {
         StudentUser studentUser = req.body().asJson().mapping(StudentUser.class);
 
         try {
             UserService.registerStudent(studentUser, req.getDBConnection());
             return Result.Ok.json(new JsonResult("Student created"));
         } catch (InternalServerErrorException e) {
+            return Result.InternalServerError.json(new JsonResult(e.getMessage()));
+        } catch (SQLException e) {
             return Result.InternalServerError.json(new JsonResult(e.getMessage()));
         }
     }
