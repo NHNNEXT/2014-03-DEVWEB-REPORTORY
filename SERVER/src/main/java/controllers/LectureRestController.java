@@ -7,13 +7,13 @@ import autumn.annotation.DELETE;
 import autumn.annotation.INP;
 import autumn.annotation.POST;
 import autumn.header.Header;
-import controllers.rest.RestAction;
+import controllers.action.RestAction;
 import controllers.services.LectureService;
 import controllers.services.UserService;
 import models.Lecture;
 import models.LectureRegistration;
 import models.StudentUser;
-import util.JsonResult;
+import util.ResultResponse;
 import util.exceptions.BadRequestException;
 import util.exceptions.ForbiddenException;
 
@@ -57,7 +57,7 @@ public class LectureRestController {
             lecture.prof = UserService.getProfLoginData(req).uid;
 
             Integer generatedLectureId = LectureService.createLecture(lecture, req.getDBConnection());
-            return Result.Ok.json(new JsonResult("Lecture created")).
+            return Result.Ok.json(new ResultResponse("Lecture created")).
                     with(new Header(Header.LOCATION, "/lectures" + generatedLectureId));
         });
     }
@@ -71,7 +71,7 @@ public class LectureRestController {
             }
 
             LectureService.deleteLecture(Integer.parseInt(lectureId), UserService.getProfLoginData(req).uid, req.getDBConnection());
-            return Result.Ok.json(new JsonResult("Lecture deleted"));
+            return Result.Ok.json(new ResultResponse("Lecture deleted"));
         });
     }
 
@@ -103,7 +103,7 @@ public class LectureRestController {
             }
 
             LectureService.joinLecture(lectureRegistration, req.getDBConnection());
-            return Result.Ok.json(new JsonResult("Successfully joined"));
+            return Result.Ok.json(new ResultResponse("Successfully joined"));
         });
     }
 
@@ -116,7 +116,7 @@ public class LectureRestController {
             }
 
             LectureService.leaveLecture(Integer.parseInt(lectureId), UserService.getStuLoginData(req).uid, req.getDBConnection());
-            return Result.Ok.json(new JsonResult("Successfully leaved"));
+            return Result.Ok.json(new ResultResponse("Successfully leaved"));
         });
     }
 

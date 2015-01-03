@@ -4,7 +4,8 @@ import autumn.Request;
 import autumn.Result;
 import autumn.annotation.Controller;
 import autumn.annotation.GET;
-import controllers.rest.RestAction;
+import controllers.action.RestAction;
+import controllers.action.ViewAction;
 import controllers.services.UserService;
 import models.User;
 import util.exceptions.ForbiddenException;
@@ -12,11 +13,9 @@ import util.exceptions.ForbiddenException;
 @Controller
 public class MainController {
 
-    // TODO: static 리소스에 대한 접근 방법이 필요하다.
-
     @GET("/")
     public static Result getMain(Request req) {
-        return Result.Ok.template("home").withVariable("loginUser", UserService.getUserLoginData(req));
+        return ViewAction.doActionWithLoginUser(req, () -> Result.Ok.template("home"));
     }
 
     @GET("/some-path/1")
@@ -37,7 +36,6 @@ public class MainController {
 
         User loginUser = UserService.getUserLoginData(req);
 
-        // return Result.Ok.template("home").withVariable("loginUser", loginUser.name);
         return Result.Ok.template("home").withVariable("loginUser", loginUser);
     }
 
