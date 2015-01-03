@@ -1,4 +1,4 @@
-package reportroy.attachment;
+package util.attachment;
 
 /**
 * Created by infinitu on 14. 12. 31..

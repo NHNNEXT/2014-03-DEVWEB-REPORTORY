@@ -8,23 +8,22 @@ import autumn.annotation.INP;
 import autumn.annotation.POST;
 import autumn.header.session.SessionKeyIssuer;
 import com.google.common.net.HttpHeaders;
+import controllers.services.UserService;
 import models.Attachment;
 import models.User;
 import models.tables.AttachmentsTable;
-import reportroy.attachment.AttachmentStatus;
-import reportroy.attachment.UploadRequestForm;
 import util.Utils;
+import util.attachment.AttachmentStatus;
+import util.attachment.UploadRequestForm;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by infinitu on 14. 12. 26..
- */
 @Controller
 public class AttachmentController {
     private final static String AttachmentTempSubdirectory = "attachments/";
@@ -41,10 +40,10 @@ public class AttachmentController {
     @POST("/attachment")
     public static Result uploadFile(Request req) throws NoSuchAlgorithmException {
         User user;
-        if(UserController.isPrefessorUser(req))
-            user = UserController.getProfLoginData(req).toUser();
-        else if(UserController.isStudentUser(req))
-            user = UserController.getStuLoginData(req).toUser();
+        if(UserService.isProfessorUser(req))
+            user = UserService.getProfLoginData(req).toUser();
+        else if(UserService.isStudentUser(req))
+            user = UserService.getStuLoginData(req).toUser();
         else
             return Result.Forbidden.plainText("only user can upload files");
         

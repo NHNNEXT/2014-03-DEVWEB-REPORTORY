@@ -5,9 +5,7 @@ import autumn.database.Condition;
 import autumn.database.JoinQuery;
 import autumn.database.JoinTable;
 import models.Assignment;
-import models.Lecture;
 import models.tables.AssignmentTable;
-import models.tables.LectureRegistrationTable;
 import models.tables.LectureTable;
 
 import java.sql.Timestamp;

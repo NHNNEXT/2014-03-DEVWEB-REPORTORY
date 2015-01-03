@@ -7,22 +7,19 @@ import autumn.annotation.GET;
 import autumn.annotation.INP;
 import autumn.annotation.POST;
 import autumn.database.AbstractQuery;
-import autumn.database.JoinQuery;
 import autumn.database.jdbc.DBConnection;
-import models.*;
+import controllers.services.UserService;
+import models.Assignment;
+import models.AssignmentAttachment;
+import models.ProfessorUser;
+import models.StudentUser;
 import models.tables.AssignmentAttachmentTable;
 import models.tables.AssignmentTable;
-import models.tables.AttachmentsTable;
 import models.tables.joined.LectureAssignmentJoin;
 import models.tables.joined.LectureRegistrationAssignmentJoin;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-
-/**
- * Created by infinitu on 14. 12. 26..
- */
 
 @Controller
 public class AssignmentRestController {
@@ -43,12 +40,12 @@ public class AssignmentRestController {
         String[] attachments;
     }
 
-    @POST("/{lid}/assignments")
+    @POST("/lectures/{lid}/assignments")
     public static Result createAssignment(@INP("lid")String lidStr, Request req) throws SQLException {
-        if(!UserController.isPrefessorUser(req))
+        if(!UserService.isProfessorUser(req))
             return Result.Forbidden.plainText("only prof can create assignment");
 
-        ProfessorUser user = UserController.getProfLoginData(req);
+        ProfessorUser user = UserService.getProfLoginData(req);
 
         AssignmentWithAttach assign = req.body().asJson().mapping(AssignmentWithAttach.class);
         assign.lid = Integer.parseInt(lidStr);
@@ -56,7 +53,7 @@ public class AssignmentRestController {
         DBConnection db = req.getDBConnection();
         db.transaction();
 
-        Integer aid = AssignmentTable.getQuery().insertReturningGenKey(db,assign);
+        Integer aid = AssignmentTable.getQuery().insertReturningGenKey(db, assign);
         if(aid == null)
             return Result.Forbidden.plainText("no such lectures");
         if(assign.attachments!=null && assign.attachments.length>0) {
@@ -77,12 +74,12 @@ public class AssignmentRestController {
         return Result.Ok.plainText("successfully");
     }
 
-    @GET("/{lid}/assignments")
+    @GET("/lectures/{lid}/assignments")
     public static Result listAssignment(@INP("lid")String lidStr, Request req) throws SQLException {
         int lid = Integer.parseInt(lidStr);
-        if(UserController.isPrefessorUser(req))
+        if(UserService.isProfessorUser(req))
             return getProfessorAssignment(req,lid);
-        else if (UserController.isStudentUser(req))
+        else if (UserService.isStudentUser(req))
             return getStudentAssignment(req,lid);
         return Result.Forbidden.plainText("only user can request it.");
     }
@@ -102,32 +99,30 @@ public class AssignmentRestController {
     }
 
     private static Result getProfessorAssignment(Request req, int lid) throws SQLException {
-        ProfessorUser prof = UserController.getProfLoginData(req);
+        ProfessorUser prof = UserService.getProfLoginData(req);
         List<Assignment> assignments =getProfAssignQuery(prof, lid).list(req.getDBConnection());
         return Result.Ok.json(assignments);
     }
 
     private static Result getStudentAssignment(Request req, int lid) throws SQLException {
-        StudentUser stu = UserController.getStuLoginData(req);
+        StudentUser stu = UserService.getStuLoginData(req);
         List<Assignment> assignments = getStuAssignQuery(stu,lid).list(req.getDBConnection());
         return Result.Ok.json(assignments);
     }
 
-    @GET("/{lid}/{aid}")
+    @GET("/lectures/{lid}/assignments/{aid}")
     public static Result viewAssignment(@INP("lid")String lidStr, @INP("aid")String aidStr, Request req) throws SQLException {
         int lid = Integer.parseInt(lidStr);
         int aid = Integer.parseInt(aidStr);
-        if(UserController.isPrefessorUser(req))
+        if(UserService.isProfessorUser(req))
             return getFristProfessorAssignment(req,lid,aid);
-        else if (UserController.isStudentUser(req))
+        else if (UserService.isStudentUser(req))
             return getFirstStudentAssignment(req,lid,aid);
         return Result.Forbidden.plainText("only user can request it.");
     }
 
-
-
     private static Result getFristProfessorAssignment(Request req, int lid, int aid) throws SQLException {
-        ProfessorUser prof = UserController.getProfLoginData(req);
+        ProfessorUser prof = UserService.getProfLoginData(req);
         Assignment assign =getProfAssignQuery(prof, lid).where((t)->
                 (t.aid) .isEqualTo (aid)).first(req.getDBConnection());
         if(assign==null)
@@ -137,7 +132,7 @@ public class AssignmentRestController {
     }
 
     private static Result getFirstStudentAssignment(Request req, int lid, int aid) throws SQLException {
-        StudentUser stu = UserController.getStuLoginData(req);
+        StudentUser stu = UserService.getStuLoginData(req);
 
         Assignment assign =getStuAssignQuery(stu, lid).where((t)->
                 (t.aid) .isEqualTo (aid)).first(req.getDBConnection());
