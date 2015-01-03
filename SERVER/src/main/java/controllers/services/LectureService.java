@@ -22,7 +22,7 @@ public class LectureService {
                 .first(dbConnection);
 
         if (lecture == null) {
-            throw new NotFoundException("No such lecture");
+            throw new NotFoundException("no_such_lecture");
         }
 
         return lecture;
@@ -50,7 +50,7 @@ public class LectureService {
                 .insertReturningGenKey(dbConnection, lecture);
 
         if (lectureId == null) {
-            throw new InternalServerErrorException("Create failed");
+            throw new InternalServerErrorException("create_failed");
         }
 
         return lectureId;
@@ -63,7 +63,7 @@ public class LectureService {
                 .delete(dbConnection);
 
         if (rowCount < 1) {
-            throw new BadRequestException("No such lecture");
+            throw new BadRequestException("no_such_lecture");
         }
     }
 
@@ -72,7 +72,7 @@ public class LectureService {
                 .insert(dbConnection, lectureRegistration);
 
         if (rowCount < 1) {
-            throw new BadRequestException("Invalid request");
+            throw new BadRequestException("invalid_request");
         }
     }
 
@@ -83,7 +83,7 @@ public class LectureService {
                 .delete(dbConnection);
 
         if (rowCount < 1) {
-            throw new BadRequestException("Invalid request");
+            throw new BadRequestException("invalid_request");
         }
     }
 }

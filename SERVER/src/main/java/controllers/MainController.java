@@ -4,8 +4,10 @@ import autumn.Request;
 import autumn.Result;
 import autumn.annotation.Controller;
 import autumn.annotation.GET;
+import controllers.rest.RestAction;
 import controllers.services.UserService;
 import models.User;
+import util.exceptions.ForbiddenException;
 
 @Controller
 public class MainController {
@@ -37,5 +39,14 @@ public class MainController {
 
         // return Result.Ok.template("home").withVariable("loginUser", loginUser.name);
         return Result.Ok.template("home").withVariable("loginUser", loginUser);
+    }
+
+    @GET("/rest-test")
+    public static Result restTestFunc(Request req) {
+        return RestAction.doAction(() -> {
+            System.out.println(req.getPath());
+            throw new ForbiddenException("testMessage");
+            // return Result.Ok.json(new JsonResult("It just works"));
+        });
     }
 }

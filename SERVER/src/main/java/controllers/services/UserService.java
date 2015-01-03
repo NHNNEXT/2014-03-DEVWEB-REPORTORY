@@ -27,7 +27,7 @@ public class UserService {
                 .first(dbConnection);
 
         if (user == null) {
-            throw new ForbiddenException("No such user");
+            throw new ForbiddenException("no_such_user");
         }
 
         return user;
@@ -58,7 +58,7 @@ public class UserService {
             detailUserRegister.accept(userId);
         } catch (SQLException e) {
             dbConnection.rollBack();
-            throw new InternalServerErrorException("Register failed");
+            throw new InternalServerErrorException("register_failed");
         }
     }
 

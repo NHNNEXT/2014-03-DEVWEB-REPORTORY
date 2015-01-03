@@ -1,6 +1,8 @@
 package util.exceptions;
 
-public class BadRequestException extends Exception {
+import util.lang.LocalizedException;
+
+public class BadRequestException extends LocalizedException {
     private Throwable ex;
 
     public BadRequestException() {

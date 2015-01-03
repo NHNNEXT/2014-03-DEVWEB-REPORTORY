@@ -1,6 +1,8 @@
 package util.exceptions;
 
-public class ForbiddenException extends Exception {
+import util.lang.LocalizedException;
+
+public class ForbiddenException extends LocalizedException {
     private Throwable ex;
 
     public ForbiddenException() {

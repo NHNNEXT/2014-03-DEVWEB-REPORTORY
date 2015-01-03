@@ -7,6 +7,7 @@ import autumn.annotation.DELETE;
 import autumn.annotation.INP;
 import autumn.annotation.POST;
 import autumn.header.Header;
+import controllers.rest.RestAction;
 import controllers.services.LectureService;
 import controllers.services.UserService;
 import models.Lecture;
@@ -14,141 +15,109 @@ import models.LectureRegistration;
 import models.StudentUser;
 import util.JsonResult;
 import util.exceptions.BadRequestException;
-import util.exceptions.InternalServerErrorException;
-import util.exceptions.NotFoundException;
-
-import java.sql.SQLException;
+import util.exceptions.ForbiddenException;
 
 @Controller
 public class LectureRestController {
 
     // @GET("/lectures")
     public static Result listLecture(Request req) {
-        try {
+        return RestAction.doAction(() -> {
             if (UserService.isProfessorUser(req)) {
                 return Result.Ok.json(LectureService.getLecturesByProfessor(UserService.getProfLoginData(req).uid, req.getDBConnection()));
             } else if (UserService.isStudentUser(req)) {
                 return Result.Ok.json(LectureService.getLecturesByQuery(req.getUrlQueryParam("search"), req.getDBConnection()));
             }
-            return Result.Forbidden.json(new JsonResult("Login required"));
-        } catch (SQLException e) {
-            return Result.InternalServerError.json(new JsonResult(e.getMessage()));
-        }
+            throw new ForbiddenException("login_required");
+        });
     }
 
     // @GET("/lectures/:lectureId")
     public static Result viewLecture(Request req, String lectureId) {
-        if (!(UserService.isStudentUser(req) || UserService.isProfessorUser(req)))
-            return Result.Forbidden.json(new JsonResult("Permission denied"));
-
-        try {
+        return RestAction.doAction(() -> {
+            if (!(UserService.isStudentUser(req) || UserService.isProfessorUser(req)))
+                throw new ForbiddenException("permission_denied");
             return Result.Ok.json(LectureService.getLecture(Integer.parseInt(lectureId), req.getDBConnection()));
-        } catch (NotFoundException e) {
-            return Result.NotFound.json(new JsonResult(e.getMessage()));
-        } catch (SQLException e) {
-            return Result.InternalServerError.json(new JsonResult(e.getMessage()));
-        }
+        });
     }
 
     @POST("/lectures")
     public static Result createLecture(Request req) {
-        if (!UserService.isProfessorUser(req))
-            return Result.Forbidden.json(new JsonResult("Only professors can create lecture."));
+        return RestAction.doAction(() -> {
+            if (!UserService.isProfessorUser(req))
+                throw new ForbiddenException("only_professors_can_create_lecture");
 
-        Lecture lecture;
-        try {
-            lecture = req.body().asJson().mapping(Lecture.class);
-
-            if (lecture == null) {
-                throw new Exception();
+            Lecture lecture;
+            try {
+                lecture = req.body().asJson().mapping(Lecture.class);
+            } catch (Exception e) {
+                throw new BadRequestException("invalid_request");
             }
-        } catch (Exception e) {
-            return Result.BadRequest.json(new JsonResult("Invalid request form"));
-        }
 
-        lecture.prof = UserService.getProfLoginData(req).uid;
+            lecture.prof = UserService.getProfLoginData(req).uid;
 
-        try {
-           Integer generatedLectureId = LectureService.createLecture(lecture, req.getDBConnection());
+            Integer generatedLectureId = LectureService.createLecture(lecture, req.getDBConnection());
             return Result.Ok.json(new JsonResult("Lecture created")).
                     with(new Header(Header.LOCATION, "/lectures" + generatedLectureId));
-        } catch (InternalServerErrorException e) {
-            return Result.InternalServerError.json(new JsonResult(e.getMessage()));
-        } catch (SQLException e) {
-            return Result.InternalServerError.json(new JsonResult(e.getMessage()));
-        }
+        });
     }
 
     @DELETE("/lectures/:lectureId")
     public static Result deleteLecture(Request req,
                                        @INP("lectureId") String lectureId) {
-        if (!UserService.isProfessorUser(req))
-            return Result.Forbidden.json(new JsonResult("Only professors can delete lecture."));
+        return RestAction.doAction(() -> {
+            if (!UserService.isProfessorUser(req)) {
+                throw new ForbiddenException("only_professors_can_delete_lecture");
+            }
 
-        try {
             LectureService.deleteLecture(Integer.parseInt(lectureId), UserService.getProfLoginData(req).uid, req.getDBConnection());
             return Result.Ok.json(new JsonResult("Lecture deleted"));
-        } catch (BadRequestException e) {
-            return Result.BadRequest.json(new JsonResult(e.getMessage()));
-        } catch (SQLException e) {
-            return Result.InternalServerError.json(new JsonResult(e.getMessage()));
-        }
+        });
     }
 
     @POST("/lectures/:lectureId/join")
     public static Result joinLecture(Request req,
                                      @INP("lectureId") String lectureId) {
-        if (!UserService.isStudentUser(req)) {
-            return Result.Forbidden.json(new JsonResult("Only students can join lecture."));
-        }
-
-        LectureRegistration lectureRegistration;
-        try {
-            lectureRegistration = req.body().asJson().mapping(LectureRegistration.class);
-
-            if (lectureRegistration == null) {
-                throw new Exception();
+        return RestAction.doAction(() -> {
+            if (!UserService.isStudentUser(req)) {
+                throw new ForbiddenException("only_professors_can_join_lecture");
             }
-        } catch (Exception e){
-            return Result.BadRequest.json(new JsonResult("Invalid request form"));
-        }
 
-        lectureRegistration.lid = Integer.parseInt(lectureId);
-        lectureRegistration.accepted = false;
+            LectureRegistration lectureRegistration;
+            try {
+                lectureRegistration = req.body().asJson().mapping(LectureRegistration.class);
+            } catch (Exception e){
+                throw new BadRequestException("invalid_request");
+            }
 
-        StudentUser stu = UserService.getStuLoginData(req);
+            lectureRegistration.lid = Integer.parseInt(lectureId);
+            lectureRegistration.accepted = false;
 
-        if (lectureRegistration.major == null) {
-            lectureRegistration.major = stu.defMajor;
-        }
-        if (lectureRegistration.identity == null) {
-            lectureRegistration.identity = stu.defIdentity;
-        }
+            StudentUser stu = UserService.getStuLoginData(req);
 
-        try {
+            if (lectureRegistration.major == null) {
+                lectureRegistration.major = stu.defMajor;
+            }
+            if (lectureRegistration.identity == null) {
+                lectureRegistration.identity = stu.defIdentity;
+            }
+
             LectureService.joinLecture(lectureRegistration, req.getDBConnection());
             return Result.Ok.json(new JsonResult("Successfully joined"));
-        } catch (BadRequestException e) {
-            return Result.BadRequest.json(new JsonResult(e.getMessage()));
-        } catch (SQLException e) {
-            return Result.InternalServerError.json(new JsonResult(e.getMessage()));
-        }
+        });
     }
 
     @POST("/lectures/:lectureId/leave")
     public static Result leaveLecture(Request req,
                                      @INP("lectureId") String lectureId) {
-        if (!UserService.isStudentUser(req)) {
-            return Result.Forbidden.json(new JsonResult("Only students can leave lecture."));
-        }
+        return RestAction.doAction(() -> {
+            if (!UserService.isStudentUser(req)) {
+                throw new ForbiddenException("only_professors_can_leave_lecture");
+            }
 
-        try {
             LectureService.leaveLecture(Integer.parseInt(lectureId), UserService.getStuLoginData(req).uid, req.getDBConnection());
             return Result.Ok.json(new JsonResult("Successfully leaved"));
-        } catch (BadRequestException e) {
-            return Result.BadRequest.json(new JsonResult(e.getMessage()));
-        } catch (SQLException e) {
-            return Result.InternalServerError.json(new JsonResult(e.getMessage()));
-        }
+        });
     }
+
 }

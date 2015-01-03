@@ -1,6 +1,8 @@
 package util.exceptions;
 
-public class NotFoundException extends Exception {
+import util.lang.LocalizedException;
+
+public class NotFoundException extends LocalizedException {
     private Throwable ex;
 
     public NotFoundException() {

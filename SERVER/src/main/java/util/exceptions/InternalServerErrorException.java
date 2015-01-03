@@ -1,6 +1,8 @@
 package util.exceptions;
 
-public class InternalServerErrorException extends Exception {
+import util.lang.LocalizedException;
+
+public class InternalServerErrorException extends LocalizedException {
     private Throwable ex;
 
     public InternalServerErrorException() {

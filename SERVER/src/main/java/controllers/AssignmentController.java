@@ -6,8 +6,6 @@ import autumn.annotation.Controller;
 import autumn.annotation.GET;
 import autumn.annotation.INP;
 
-import java.sql.SQLException;
-
 @Controller
 public class AssignmentController {
 
