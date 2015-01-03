@@ -12,7 +12,7 @@ import java.sql.Timestamp;
  * Created by infinitu on 14. 12. 25..
  */
 
-@Model("Assignment")
+@Model("Assignments")
 public class AssignmentTable extends Table<Assignment>{
 
     public Column<Integer>   aid = intColumn("aid");
