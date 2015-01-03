@@ -7,10 +7,10 @@
 <div class="container">
 
     <div class="page-header">
-        <h1>오류 발생</h1>
+        <h1 th:text="#{error.pageHeading}" />
     </div>
 
-    <h3>오류 내용</h3>
+    <h3 th:text="#{error.errorDescriptionHeading}" />
     <p th:text="${errorMessage}" />
 
 </div> <!-- /container -->

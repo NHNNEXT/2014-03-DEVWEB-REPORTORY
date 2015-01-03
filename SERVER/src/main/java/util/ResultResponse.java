@@ -1,9 +1,9 @@
 package util;
 
-public class JsonResult {
+public class ResultResponse {
     public String result;
 
-    public JsonResult(String result) {
+    public ResultResponse(String result) {
         this.result = result;
     }
 }
