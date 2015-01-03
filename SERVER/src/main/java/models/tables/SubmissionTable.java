@@ -4,7 +4,7 @@ import autumn.annotation.Model;
 import autumn.database.Column;
 import autumn.database.Table;
 import autumn.database.TableQuery;
-import models.Submisstion;
+import models.Submission;
 
 import java.sql.Timestamp;
 
@@ -12,27 +12,26 @@ import java.sql.Timestamp;
  * Created by infinitu on 14. 12. 25..
  */
 @Model("Submissions")
-public class SubmisstionTable extends Table<Submisstion>{
+public class SubmissionTable extends Table<Submission>{
 
+    public Column<Integer>      sid         = intColumn("sid")   ;
     public Column<Integer>      uid         = intColumn("uid")   ;
-    public Column<Integer>      lid         = intColumn("lid")   ;
     public Column<Integer>      aid         = intColumn("aid")   ;
-    public Column<Integer>      revision    = intColumn("revision")   ;
     public Column<String>       description = stringColumn("description");
     public Column<Timestamp>    create_time = timestampColumn("create_date");
 
 
-    public SubmisstionTable() throws NoSuchFieldException {
-        super(Submisstion.class);
+    public SubmissionTable() throws NoSuchFieldException {
+        super(Submission.class);
     }
 
-    private static ThreadLocal<TableQuery<SubmisstionTable>> tQuery;
-    public static TableQuery<SubmisstionTable> getQuery() {
+    private static ThreadLocal<TableQuery<SubmissionTable>> tQuery;
+    public static TableQuery<SubmissionTable> getQuery() {
         if (tQuery == null)
-            tQuery = new ThreadLocal<TableQuery<SubmisstionTable>>() {
+            tQuery = new ThreadLocal<TableQuery<SubmissionTable>>() {
                 @Override
-                protected TableQuery<SubmisstionTable> initialValue() {
-                    return new TableQuery<>(SubmisstionTable.class);
+                protected TableQuery<SubmissionTable> initialValue() {
+                    return new TableQuery<>(SubmissionTable.class);
                 }
             };
 

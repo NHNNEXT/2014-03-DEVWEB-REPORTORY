@@ -12,10 +12,10 @@ import models.SubmissionAttachment;
 @Model("Submission_Attachments")
 public class SubmissionAttachmentsTable extends Table<SubmissionAttachment>{
 
-    public Column<Integer>  uid          = intColumn("uid");
-    public Column<Integer>  lid          = intColumn("lid");
+    public Column<Integer>  sid          = intColumn("sid");
     public Column<Integer>  aid          = intColumn("aid");
     public Column<String>   hashcode_id  = stringColumn("hashcode_id");
+    public Column<Integer>  owner          = intColumn("owner");
 
     public SubmissionAttachmentsTable() throws NoSuchFieldException {
         super(SubmissionAttachment.class);
