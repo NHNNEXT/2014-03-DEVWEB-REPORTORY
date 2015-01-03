@@ -23,14 +23,14 @@ public class LectureController {
     @GET("/lectures")
     public static Result getLectureList(Request req) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Method method = getController(req).getMethod("listLecture", req.getClass());
-        return (Result) method.invoke(null, req);
+        return (Result) method.invoke(null, new Object[]{req});
     }
 
     @GET("/lectures/:lectureId")
     public static Result getLectureView(Request req,
                                         @INP("lectureId") String lectureId) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Method method = getController(req).getMethod("viewLecture", req.getClass(), lectureId.getClass());
-        return (Result) method.invoke(null, req, lectureId);
+        return (Result) method.invoke(null, new Object[]{req, lectureId});
     }
 
 }

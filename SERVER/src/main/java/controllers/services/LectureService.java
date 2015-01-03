@@ -29,20 +29,15 @@ public class LectureService {
     }
 
     public static List<Lecture> getLecturesByProfessor(Integer professorId, DBConnection dbConnection) throws SQLException {
-        List<Lecture> lectures = LectureTable.getQuery()
-                .where((t) ->
-                        (t.prof).isEqualTo(professorId))
+        return LectureTable.getQuery()
+                .where((t) -> (t.prof).isEqualTo(professorId))
                 .list(dbConnection);
-
-        return lectures;
     }
 
     public static List<LectureDetail> getLecturesByQuery(String query, DBConnection dbConnection) throws SQLException {
-        List<LectureDetail> lectures = LectureProfessorJoin.getQuery()
-                .where((t)->(t.lecturename).isLike(query))
+        return LectureProfessorJoin.getQuery()
+                .where((t) -> (t.lecturename).isLike(query))
                 .list(dbConnection);
-
-        return lectures;
     }
 
     public static Integer createLecture(Lecture lecture, DBConnection dbConnection) throws SQLException, InternalServerErrorException {

@@ -33,11 +33,13 @@ public class LectureRestController {
     }
 
     // @GET("/lectures/:lectureId")
-    public static Result viewLecture(Request req, String lectureId) {
+    public static Result viewLecture(Request req, String lectureIdParam) {
+        Integer lectureId = Integer.parseInt(lectureIdParam);
+
         return RestAction.doAction(() -> {
             if (!(UserService.isStudentUser(req) || UserService.isProfessorUser(req)))
                 throw new ForbiddenException("permission_denied");
-            return Result.Ok.json(LectureService.getLecture(Integer.parseInt(lectureId), req.getDBConnection()));
+            return Result.Ok.json(LectureService.getLecture(lectureId, req.getDBConnection()));
         });
     }
 
@@ -55,6 +57,7 @@ public class LectureRestController {
             }
 
             lecture.prof = UserService.getProfLoginData(req).uid;
+            System.out.println(lecture.prof);
 
             Integer generatedLectureId = LectureService.createLecture(lecture, req.getDBConnection());
             return Result.Ok.json(new ResultResponse("Lecture created")).
@@ -64,20 +67,24 @@ public class LectureRestController {
 
     @DELETE("/lectures/:lectureId")
     public static Result deleteLecture(Request req,
-                                       @INP("lectureId") String lectureId) {
+                                       @INP("lectureId") String lectureIdParam) {
+        Integer lectureId = Integer.parseInt(lectureIdParam);
+
         return RestAction.doAction(() -> {
             if (!UserService.isProfessorUser(req)) {
                 throw new ForbiddenException("only_professors_can_delete_lecture");
             }
 
-            LectureService.deleteLecture(Integer.parseInt(lectureId), UserService.getProfLoginData(req).uid, req.getDBConnection());
+            LectureService.deleteLecture(lectureId, UserService.getProfLoginData(req).uid, req.getDBConnection());
             return Result.Ok.json(new ResultResponse("Lecture deleted"));
         });
     }
 
     @POST("/lectures/:lectureId/join")
     public static Result joinLecture(Request req,
-                                     @INP("lectureId") String lectureId) {
+                                     @INP("lectureId") String lectureIdParam) {
+        Integer lectureId = Integer.parseInt(lectureIdParam);
+
         return RestAction.doAction(() -> {
             if (!UserService.isStudentUser(req)) {
                 throw new ForbiddenException("only_professors_can_join_lecture");
@@ -90,7 +97,7 @@ public class LectureRestController {
                 throw new BadRequestException("invalid_request");
             }
 
-            lectureRegistration.lid = Integer.parseInt(lectureId);
+            lectureRegistration.lid = lectureId;
             lectureRegistration.accepted = false;
 
             StudentUser stu = UserService.getStuLoginData(req);
@@ -109,13 +116,15 @@ public class LectureRestController {
 
     @POST("/lectures/:lectureId/leave")
     public static Result leaveLecture(Request req,
-                                     @INP("lectureId") String lectureId) {
+                                     @INP("lectureId") String lectureIdParam) {
+        Integer lectureId = Integer.parseInt(lectureIdParam);
+
         return RestAction.doAction(() -> {
             if (!UserService.isStudentUser(req)) {
                 throw new ForbiddenException("only_professors_can_leave_lecture");
             }
 
-            LectureService.leaveLecture(Integer.parseInt(lectureId), UserService.getStuLoginData(req).uid, req.getDBConnection());
+            LectureService.leaveLecture(lectureId, UserService.getStuLoginData(req).uid, req.getDBConnection());
             return Result.Ok.json(new ResultResponse("Successfully leaved"));
         });
     }
