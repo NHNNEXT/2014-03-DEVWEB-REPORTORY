@@ -109,7 +109,7 @@ public class UserController {
         record.passwd = record.passwd;//todo
         record.join_date = new Timestamp(System.currentTimeMillis());
         return UserTable.getQuery()
-                        .insertRetunningGenKey(req.getDBConnection(), new User[]{record})
+                        .insertReturningGenKey(req.getDBConnection(), new User[]{record})
                         .get(0);
     }
 

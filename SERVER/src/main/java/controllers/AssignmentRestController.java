@@ -56,7 +56,7 @@ public class AssignmentRestController {
         DBConnection db = req.getDBConnection();
         db.transaction();
 
-        Integer aid = AssignmentTable.getQuery().insertRetunningGenKey(db,assign);
+        Integer aid = AssignmentTable.getQuery().insertReturningGenKey(db,assign);
         if(aid == null)
             return Result.Forbidden.plainText("no such lectures");
         if(assign.attachments!=null && assign.attachments.length>0) {
@@ -153,6 +153,7 @@ public class AssignmentRestController {
                 AssignmentAttachmentTable.getQuery().where((t) ->
                         (t.aid).isEqualTo(assign.aid))
                         .list(req.getDBConnection());
-        assignment.attachments = (String[]) attches.stream().map((a)->a.hashcode).toArray();
+        assignment.attachments = (String[]) attches.stream().map((a) -> a.hashcode).toArray();
         return assignment;
+    }
 }
