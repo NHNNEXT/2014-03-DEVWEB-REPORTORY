@@ -17,6 +17,7 @@ import models.tables.joined.LectureAssignmentJoin;
 import models.tables.joined.LectureRegistrationAssignmentJoin;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,11 +53,12 @@ public class AssignmentRestController {
 
         AssignmentWithAttach assign = req.body().asJson().mapping(AssignmentWithAttach.class);
         assign.lid = Integer.parseInt(lidStr);
+        assign.createTime = new Timestamp(System.currentTimeMillis());
 
         DBConnection db = req.getDBConnection();
         db.transaction();
 
-        Integer aid = AssignmentTable.getQuery().insertReturningGenKey(db,assign);
+        Integer aid = AssignmentTable.getQuery().insertReturningGenKey(db, assign);
         if(aid == null)
             return Result.Forbidden.plainText("no such lectures");
         if(assign.attachments!=null && assign.attachments.length>0) {
@@ -117,34 +119,33 @@ public class AssignmentRestController {
     public static Result viewAssignment(@INP("lid")String lidStr, @INP("aid")String aidStr, Request req) throws SQLException {
         int lid = Integer.parseInt(lidStr);
         int aid = Integer.parseInt(aidStr);
+        Assignment assign = null;
         if(UserController.isPrefessorUser(req))
-            return getFristProfessorAssignment(req,lid,aid);
+            assign = getFristProfessorAssignment(req,lid,aid);
         else if (UserController.isStudentUser(req))
-            return getFirstStudentAssignment(req,lid,aid);
-        return Result.Forbidden.plainText("only user can request it.");
-    }
+            assign = getFirstStudentAssignment(req,lid,aid);
 
-
-
-    private static Result getFristProfessorAssignment(Request req, int lid, int aid) throws SQLException {
-        ProfessorUser prof = UserController.getProfLoginData(req);
-        Assignment assign =getProfAssignQuery(prof, lid).where((t)->
-                (t.aid) .isEqualTo (aid)).first(req.getDBConnection());
         if(assign==null)
             return Result.Forbidden.plainText("not found");
 
-        return Result.Ok.json(addAttachments(req,assign));
+        return Result.Ok.json(addAttachments(req, assign));
     }
 
-    private static Result getFirstStudentAssignment(Request req, int lid, int aid) throws SQLException {
+
+
+    protected static Assignment getFristProfessorAssignment(Request req, int lid, int aid) throws SQLException {
+        ProfessorUser prof = UserController.getProfLoginData(req);
+        Assignment assign =getProfAssignQuery(prof, lid).where((t)->
+                (t.aid) .isEqualTo (aid)).first(req.getDBConnection());
+        return assign;
+    }
+
+    protected static Assignment getFirstStudentAssignment(Request req, int lid, int aid) throws SQLException {
         StudentUser stu = UserController.getStuLoginData(req);
 
         Assignment assign =getStuAssignQuery(stu, lid).where((t)->
                 (t.aid) .isEqualTo (aid)).first(req.getDBConnection());
-        if(assign==null)
-            return Result.Forbidden.plainText("not found");
-
-        return Result.Ok.json(addAttachments(req,assign));
+        return assign;
     }
 
     private static AssignmentWithAttach addAttachments(Request req, Assignment assign) throws SQLException {

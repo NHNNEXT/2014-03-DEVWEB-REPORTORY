@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 /**
  * Created by infinitu on 14. 12. 25..
  */
-public class LectureRegistrationAssignmentJoin extends JoinTable<LectureRegistrationTable,AssignmentTable, Assignment>{
+public class LectureRegistrationAssignmentJoin extends JoinTable<LectureRegistrationTable,LectureAssignmentJoin, Assignment>{
 
     public Column<Integer>   aid        = right.aid;
     public Column<Integer>   lid        = right.lid;
@@ -23,11 +23,11 @@ public class LectureRegistrationAssignmentJoin extends JoinTable<LectureRegistra
     public Column<String>    description= right.description;
 
     public LectureRegistrationAssignmentJoin() throws NoSuchFieldException {
-        super(new LectureRegistrationTable(), new AssignmentTable(), Assignment.class);
+        super(new LectureRegistrationTable(), new LectureAssignmentJoin(), Assignment.class);
     }
 
     @Override
-    public Condition on(LectureRegistrationTable lectureRegistrationTable, AssignmentTable assignmentTable) {
+    public Condition on(LectureRegistrationTable lectureRegistrationTable, LectureAssignmentJoin assignmentTable) {
         return lectureRegistrationTable.lid .isEqualTo(assignmentTable.lid) .and(
                 lectureRegistrationTable.accepted.isEqualTo(true));
     }
