@@ -97,15 +97,18 @@ public class AssignmentService {
 
     private static AssignmentWithAttach getAssignmentWithAttach(Assignment assignment, DBConnection dbConnection) throws SQLException {
         AssignmentWithAttach assignmentWithAttach = new AssignmentWithAttach(assignment);
-        List<AssignmentAttachment> assignmentAttachments =
-                AssignmentAttachmentTable.getQuery()
-                        .where((t) -> (t.aid).isEqualTo(assignment.aid))
-                        .list(dbConnection);
-        if (assignmentAttachments != null) {
-            assignmentWithAttach.attachments = new String[assignmentAttachments.size()];
-            for (int i = 0; i < assignmentAttachments.size(); i++) {
-                assignmentWithAttach.attachments[i] = assignmentAttachments.get(i).hashcode;
-            }
+
+        List<AssignmentAttachment> attachments = AssignmentAttachmentTable.getQuery()
+                .where((t) -> (t.aid).isEqualTo(assignment.aid))
+                .list(dbConnection);
+
+        if(attachments == null) {
+            return assignmentWithAttach;
+        }
+
+        assignmentWithAttach.attachments = new String[attachments.size()];
+        for (int i = 0; i < attachments.size(); i++) {
+            assignmentWithAttach.attachments[i] = attachments.get(i).hashcode;
         }
 
         return assignmentWithAttach;

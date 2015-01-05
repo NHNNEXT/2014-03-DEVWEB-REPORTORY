@@ -33,7 +33,7 @@ public class SubmissionService {
         if(submission == null)
             throw new ForbiddenException("permission_denied");
 
-        return addAttachment(submission, assignmentId, submissionId, user.uid, dbConnection);
+        return getSubmissionWithAttach(submission, assignmentId, submissionId, user.uid, dbConnection);
     }
 
     public static SubmissionWithAttach getSubmission(Integer lectureId, Integer assignmentId, Integer submissionId, ProfessorUser user, DBConnection dbConnection) throws SQLException, ForbiddenException {
@@ -48,7 +48,7 @@ public class SubmissionService {
         if(submission == null)
             throw new ForbiddenException("permission_denied");
 
-        return addAttachment(submission, assignmentId, submissionId, user.uid, dbConnection);
+        return getSubmissionWithAttach(submission, assignmentId, submissionId, user.uid, dbConnection);
     }
 
 
@@ -113,7 +113,7 @@ public class SubmissionService {
         return submissionId;
     }
 
-    private static SubmissionWithAttach addAttachment(Submission submission, Integer assignmentId, Integer submissionId, Integer userId, DBConnection dbConnection) throws SQLException {
+    private static SubmissionWithAttach getSubmissionWithAttach(Submission submission, Integer assignmentId, Integer submissionId, Integer userId, DBConnection dbConnection) throws SQLException {
         SubmissionWithAttach submissionWithAttach = new SubmissionWithAttach(submission);
 
         List<SubmissionAttachment> attachments =

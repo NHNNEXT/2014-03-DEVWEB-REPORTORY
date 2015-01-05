@@ -27,7 +27,6 @@ public class AssignmentController {
         return (Result) method.invoke(null, new Object[]{req, lectureId});
     }
 
-
     @GET("/lectures/:lectureId/assignments/:assignmentId")
     public static Result getAssignmentView(Request req,
                                         @INP("lectureId") String lectureId,
