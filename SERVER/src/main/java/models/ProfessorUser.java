@@ -17,6 +17,20 @@ public class ProfessorUser extends JsonDataSerializable {
     public Timestamp join_date   ;
     public String   major       ;
 
+
+    public ProfessorUser() {
+    }
+
+    public ProfessorUser(int uid, String name, String email, String passwd, String third_auth, Timestamp join_date, String major) {
+        this.uid = uid;
+        this.name = name;
+        this.email = email;
+        this.passwd = passwd;
+        this.third_auth = third_auth;
+        this.join_date = join_date;
+        this.major = major;
+    }
+
     public Professor toProfessor(){
         Professor prof = new Professor();
         prof.major=major;
@@ -34,5 +48,4 @@ public class ProfessorUser extends JsonDataSerializable {
         user.join_date = join_date;
         return user;
     }
-
 }

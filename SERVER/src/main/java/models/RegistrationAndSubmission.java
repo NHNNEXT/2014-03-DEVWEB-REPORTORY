@@ -7,12 +7,15 @@ import java.sql.Timestamp;
 /**
  * Created by infinitu on 14. 12. 25..
  */
-public class Submisstion extends JsonDataSerializable {
+public class RegistrationAndSubmission extends JsonDataSerializable {
 
-    public int          uid         ;
-    public int          lid         ;
+    public int      uid     ;
+    public String   identity;
+    public String   major   ;
+    public String   stu_name;
+    
+    public int          sid         ;
     public int          aid         ;
-    public int          revision    ;
     public String       description ;
     public Timestamp    create_date ;
 

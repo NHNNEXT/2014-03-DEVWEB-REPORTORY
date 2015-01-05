@@ -89,7 +89,7 @@ public class AssignmentService {
 
     private static AbstractQuery<LectureRegistrationAssignmentJoin> getUserAssignQuery(StudentUser stu, int lectureId){
         return LectureRegistrationAssignmentJoin.getQuery()
-                .where((t) -> (t.left.uid).isEqualTo(stu.uid).and(
+                .where((t) -> (t.right.uid).isEqualTo(stu.uid).and(
                         (t.left.lid).isEqualTo(lectureId)));
     }
 
@@ -99,7 +99,13 @@ public class AssignmentService {
                 AssignmentAttachmentTable.getQuery()
                         .where((t) -> (t.aid).isEqualTo(assignment.aid))
                         .list(dbConnection);
-//        assignmentWithAttach.attachments = (String[]) assignmentAttachments.stream().map((attachment) -> attachment.hashcode).toArray();
+        if (assignmentAttachments != null) {
+            assignmentWithAttach.attachments = new String[assignmentAttachments.size()];
+            for (int i = 0; i < assignmentAttachments.size(); i++) {
+                assignmentWithAttach.attachments[i] = assignmentAttachments.get(i).hashcode;
+            }
+        }
+
         return assignmentWithAttach;
     }
 }

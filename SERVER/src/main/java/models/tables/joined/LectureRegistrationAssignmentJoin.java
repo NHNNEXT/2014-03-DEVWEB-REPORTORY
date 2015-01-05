@@ -13,21 +13,21 @@ import java.sql.Timestamp;
 /**
  * Created by infinitu on 14. 12. 25..
  */
-public class LectureRegistrationAssignmentJoin extends JoinTable<LectureRegistrationTable,AssignmentTable, Assignment>{
+public class LectureRegistrationAssignmentJoin extends JoinTable<LectureAssignmentJoin,LectureRegistrationTable, Assignment>{
 
-    public Column<Integer>   aid        = right.aid;
-    public Column<Integer>   lid        = right.lid;
-    public Column<Timestamp> createTime = right.createTime;
-    public Column<Timestamp> dueTime    = right.dueTime;
-    public Column<String>    title      = right.title;
-    public Column<String>    description= right.description;
+    public Column<Integer>   aid        = left.aid;
+    public Column<Integer>   lid        = left.lid;
+    public Column<Timestamp> createTime = left.createTime;
+    public Column<Timestamp> dueTime    = left.dueTime;
+    public Column<String>    title      = left.title;
+    public Column<String>    description= left.description;
 
     public LectureRegistrationAssignmentJoin() throws NoSuchFieldException {
-        super(new LectureRegistrationTable(), new AssignmentTable(), Assignment.class);
+        super(new LectureAssignmentJoin(), new LectureRegistrationTable(), Assignment.class);
     }
 
     @Override
-    public Condition on(LectureRegistrationTable lectureRegistrationTable, AssignmentTable assignmentTable) {
+    public Condition on(LectureAssignmentJoin assignmentTable, LectureRegistrationTable lectureRegistrationTable) {
         return lectureRegistrationTable.lid .isEqualTo(assignmentTable.lid) .and(
                 lectureRegistrationTable.accepted.isEqualTo(true));
     }
