@@ -52,7 +52,7 @@ public class AssignmentService {
         return getUserAssignQuery(user, lectureId).list(dbConnection);
     }
 
-    public static void createAssignment(AssignmentWithAttach assignment, Integer userId, DBConnection dbConnection) throws SQLException, ForbiddenException, InternalServerErrorException {
+    public static Integer createAssignment(AssignmentWithAttach assignment, Integer userId, DBConnection dbConnection) throws SQLException, ForbiddenException, InternalServerErrorException {
         dbConnection.transaction();
 
         Integer assignmentId = AssignmentTable.getQuery().insertReturningGenKey(dbConnection, assignment);
@@ -61,7 +61,7 @@ public class AssignmentService {
         }
 
         if(assignment.attachments == null || assignment.attachments.length <= 0) {
-            return;
+            return assignmentId;
         }
 
         AssignmentAttachment[] attachments = new AssignmentAttachment[assignment.attachments.length];
@@ -79,6 +79,8 @@ public class AssignmentService {
             dbConnection.rollBack();
             throw new InternalServerErrorException("internal_server_error");
         }
+
+        return assignmentId;
     }
 
     private static AbstractQuery<LectureAssignmentJoin> getUserAssignQuery(ProfessorUser prof, int lectureId){

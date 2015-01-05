@@ -60,8 +60,8 @@ public class LectureRestController {
             System.out.println(lecture.prof);
 
             Integer generatedLectureId = LectureService.createLecture(lecture, req.getDBConnection());
-            return Result.Ok.json(new ResultResponse("Lecture created")).
-                    with(new Header(Header.LOCATION, "/lectures" + generatedLectureId));
+            return Result.Ok.json(new ResultResponse("Lecture created"))
+                    .with(new Header(Header.LOCATION, "/lectures/" + generatedLectureId));
         });
     }
 

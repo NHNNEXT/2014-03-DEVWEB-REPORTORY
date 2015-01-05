@@ -3,7 +3,6 @@ package controllers;
 import autumn.Request;
 import autumn.Result;
 import autumn.annotation.Controller;
-import autumn.annotation.GET;
 import autumn.annotation.INP;
 import autumn.annotation.POST;
 import autumn.header.session.SessionKeyIssuer;
@@ -32,12 +31,7 @@ public class AttachmentController {
     private final static Pattern pattern = Pattern.compile("bytes ([0-9]+)-([0-9]+)/([0-9]+)");
     private final static ConcurrentHashMap<String,AttachmentStatus> map = new ConcurrentHashMap<>(); //todo extract to another server. todo automatically remove expired entry.
 
-    @GET("/attachment")
-    public static Result uploadUITest(Request req){
-        return Result.Ok.template("thymtest");
-    }
-    
-    @POST("/attachment")
+    @POST("/attachments")
     public static Result uploadFile(Request req) throws NoSuchAlgorithmException {
         User user;
         if(UserService.isProfessorUser(req))
@@ -61,10 +55,10 @@ public class AttachmentController {
             return Result.InternalServerError.plainText("error on creating");
         }
         
-        return Result.Ok.plainText("/attachment/"+tempKey);
+        return Result.Ok.plainText("/attachments/"+tempKey);
     }
 
-    @POST("/attachment/{auth}")
+    @POST("/attachments/{auth}")
     public static Result uploadFile(@INP("auth")String auth, Request req) throws Exception {
         
         AttachmentStatus obj = map.get(auth);
@@ -84,7 +78,7 @@ public class AttachmentController {
 
         if (st == ed && st == am) {
             map.remove(auth);
-            Attachment attachment = finishUploade(req, obj);
+            Attachment attachment = finishUpload(req, obj);
             return Result.Ok.json(attachment);
         }
         
@@ -97,7 +91,7 @@ public class AttachmentController {
         return Result.Ok.plainText("ok.");
     }
 
-    private static Attachment finishUploade(Request req, AttachmentStatus status) throws Exception {
+    private static Attachment finishUpload(Request req, AttachmentStatus status) throws Exception {
         File file = status.getFile();
         String hash = status.calcFileHash();
         String encodedName = URLEncoder.encode(status.getFilename(),"UTF-8");

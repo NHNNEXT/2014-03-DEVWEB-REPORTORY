@@ -5,12 +5,14 @@ import autumn.Result;
 import autumn.annotation.Controller;
 import autumn.annotation.INP;
 import autumn.annotation.POST;
+import autumn.header.Header;
 import controllers.action.RestAction;
 import controllers.models.AssignmentWithAttach;
 import controllers.services.AssignmentService;
 import controllers.services.UserService;
 import models.ProfessorUser;
 import util.ResultResponse;
+import util.exceptions.BadRequestException;
 import util.exceptions.ForbiddenException;
 
 @Controller
@@ -59,11 +61,18 @@ public class AssignmentRestController {
 
             ProfessorUser user = UserService.getProfLoginData(req);
 
-            AssignmentWithAttach assignment = req.body().asJson().mapping(AssignmentWithAttach.class);
+            AssignmentWithAttach assignment;
+            try {
+                assignment = req.body().asJson().mapping(AssignmentWithAttach.class);
+            } catch (Exception e) {
+                throw new BadRequestException("invalid_request");
+            }
+
             assignment.lid = lectureId;
 
-            AssignmentService.createAssignment(assignment, user.uid, req.getDBConnection());
-            return Result.Ok.json(new ResultResponse("Assignment created"));
+            Integer generatedAssignmentId = AssignmentService.createAssignment(assignment, user.uid, req.getDBConnection());
+            return Result.Ok.json(new ResultResponse("Assignment created"))
+                    .with(new Header(Header.LOCATION, "/lectures/" + lectureId + "/assignments/" + generatedAssignmentId));
         });
     }
 

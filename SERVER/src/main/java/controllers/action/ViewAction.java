@@ -26,20 +26,24 @@ public class ViewAction {
             return viewActionWrapper.viewAction();
         } catch (BadRequestException e) {
             // 400 Bad Request
-            return Result.BadRequest.template(ERROR_TEMPLATE_NAME).withVariable(ERROR_MESSAGE_VARIABLE_NAME, e.getLocalizedMessage());
+            return getErrorTemplateResult(Result.BadRequest, e.getLocalizedMessage());
         } catch (ForbiddenException e) {
             // 403 Forbidden
-            return Result.Forbidden.template(ERROR_TEMPLATE_NAME).withVariable(ERROR_MESSAGE_VARIABLE_NAME, e.getLocalizedMessage());
+            return getErrorTemplateResult(Result.Forbidden, e.getLocalizedMessage());
         } catch (NotFoundException e) {
             // 404 Not Found
-            return Result.NotFound.template(ERROR_TEMPLATE_NAME).withVariable(ERROR_MESSAGE_VARIABLE_NAME, e.getLocalizedMessage());
+            return getErrorTemplateResult(Result.NotFound, e.getLocalizedMessage());
         } catch (InternalServerErrorException | SQLException e) {
             // 500 Internal Server Error
-            return Result.InternalServerError.template(ERROR_TEMPLATE_NAME).withVariable(ERROR_MESSAGE_VARIABLE_NAME, e.getLocalizedMessage());
+            return getErrorTemplateResult(Result.InternalServerError, e.getLocalizedMessage());
         }
     }
 
     public static Result doActionWithLoginUser(Request req, ViewActionWrapper viewActionWrapper) {
         return doAction(viewActionWrapper).withVariable(LOGIN_USER_VARIABLE_NAME, UserService.getUserLoginData(req));
+    }
+
+    private static TemplateResult getErrorTemplateResult(Result.StatusCodeHolder statusCodeHolder, String errorMessage) {
+        return statusCodeHolder.template(ERROR_TEMPLATE_NAME).withVariable(ERROR_MESSAGE_VARIABLE_NAME, errorMessage);
     }
 }
