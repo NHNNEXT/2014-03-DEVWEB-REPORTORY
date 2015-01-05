@@ -23,10 +23,15 @@ public class LectureRestController {
     // @GET("/lectures")
     public static Result listLecture(Request req) {
         return RestAction.doAction(() -> {
+            String query = req.getUrlQueryParam("search");
+
             if (UserService.isProfessorUser(req)) {
-                return Result.Ok.json(LectureService.getLecturesByProfessor(UserService.getProfLoginData(req).uid, req.getDBConnection()));
+                return Result.Ok.json(LectureService.getLecturesByProfessor(UserService.getUserLoginData(req).uid, req.getDBConnection()));
             } else if (UserService.isStudentUser(req)) {
-                return Result.Ok.json(LectureService.getLecturesByQuery(req.getUrlQueryParam("search"), req.getDBConnection()));
+                if (query != null) {
+                    return Result.Ok.json(LectureService.getLectures(query, req.getDBConnection()));
+                }
+                return Result.Ok.json(LectureService.getLectures(UserService.getUserLoginData(req).uid, req.getDBConnection()));
             }
             throw new ForbiddenException("login_required");
         });
@@ -98,9 +103,10 @@ public class LectureRestController {
             }
 
             lectureRegistration.lid = lectureId;
-            lectureRegistration.accepted = false;
+            lectureRegistration.accepted = true; // TODO
 
             StudentUser stu = UserService.getStuLoginData(req);
+            lectureRegistration.uid = stu.uid;
 
             if (lectureRegistration.major == null) {
                 lectureRegistration.major = stu.defMajor;

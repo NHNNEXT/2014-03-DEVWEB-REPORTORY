@@ -7,6 +7,7 @@ import models.LectureRegistration;
 import models.tables.LectureRegistrationTable;
 import models.tables.LectureTable;
 import models.tables.joined.LectureProfessorJoin;
+import models.tables.joined.LectureRegistrationJoin;
 import util.exceptions.BadRequestException;
 import util.exceptions.InternalServerErrorException;
 import util.exceptions.NotFoundException;
@@ -34,9 +35,15 @@ public class LectureService {
                 .list(dbConnection);
     }
 
-    public static List<LectureDetail> getLecturesByQuery(String query, DBConnection dbConnection) throws SQLException {
+    public static List<LectureDetail> getLectures(String query, DBConnection dbConnection) throws SQLException {
         return LectureProfessorJoin.getQuery()
                 .where((t) -> (t.lecturename).isLike(query))
+                .list(dbConnection);
+    }
+
+    public static List<LectureDetail> getLectures(Integer userId, DBConnection dbConnection) throws SQLException {
+        return LectureRegistrationJoin.getQuery()
+                .where((t) -> (t.right.uid).isEqualTo(userId))
                 .list(dbConnection);
     }
 
@@ -63,7 +70,7 @@ public class LectureService {
     }
 
     public static void joinLecture(LectureRegistration lectureRegistration, DBConnection dbConnection) throws SQLException, BadRequestException {
-        Integer rowCount = LectureTable.getQuery()
+        Integer rowCount = LectureRegistrationTable.getQuery()
                 .insert(dbConnection, lectureRegistration);
 
         if (rowCount < 1) {
