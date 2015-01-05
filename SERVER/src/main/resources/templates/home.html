@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 	<head th:replace="fragments/common :: header" />
 	<body th:with="loginUser = ${#vars.get('loginUser')}">
-		<nav th:replace="fragments/common :: navbar" />
+		<nav th:replace="fragments/common :: navbar (page=home)" />
 
 		<div class="jumbotron">
 			<div th:if="${loginUser}" class="container">

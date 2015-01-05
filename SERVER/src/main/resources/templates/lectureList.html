@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 	<head th:replace="fragments/common :: header" />
 	<body>
-		<nav th:replace="fragments/common :: navbar" />
+		<nav th:replace="fragments/common :: navbar (page=lectures)" />
 
 		<div class="container-fluid">
 			<div class="row">
@@ -10,7 +10,7 @@
 					<ul class="nav nav-sidebar">
 						<li><a href="#"><h4><span th:text="#{text.selectLecture}" /></h4></a></li>
 					</ul>
-				</div>
+				</div><!-- /.sidebar -->
 				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 					<div class="page-header">
 						<h1><span th:text="#{text.selectLecture}" /></h1>
@@ -27,31 +27,5 @@
 		<!-- Placed at the end of the document so the pages load faster -->
 		<script th:replace="fragments/libs :: jquery" />
 		<script th:replace="fragments/libs :: bootstrap_js" />
-
-		<script th:inline="javascript">
-		/*<![CDATA[*/
-			function getLectures() {
-				$.ajax({
-					url: [[@{/}]] + "lectures",
-					dataType: "json",
-					success: function( lectures ) {
-						$( ".lecture-list" ).empty();
-						$.each( lectures, function( idx, lecture ) {
-							addLectureToPage( lecture );
-						});
-					}
-				});
-			}
-
-			function addLectureToPage( lecture ) {
-				console.log( lecture );
-				var lectureItem = $( "<a/>" ).addClass( "list-group-item" );
-				lectureItem = lectureItem.addClass( "lecture" ).text( lecture.title );
-				$( ".lecture-list" ).append( lectureItem.attr( "href", [[@{/}]] + "lectures" + "/" + lecture.id + "/view.do" ) );
-			}
-
-			$( document ).ready( getLectures );
-		/*]]>*/
-		</script>
 	</body>
 </html>
