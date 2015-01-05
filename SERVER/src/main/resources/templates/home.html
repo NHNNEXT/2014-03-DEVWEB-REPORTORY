@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head th:replace="fragments/common :: header" />
+	<body th:with="loginUser = ${#vars.get('loginUser')}">
+		<nav th:replace="fragments/common :: navbar (page=home)" />
+
+		<div class="jumbotron">
+			<div th:if="${loginUser}" class="container">
+				<h1><span th:text="${loginUser.name}" /><small>님 안녕하세요!</small></h1>
+			</div>
+			<div th:unless="${loginUser}" class="container">
+				<h1 th:text="#{home.welcomeMessage}" />
+				<p th:text="#{home.welcomeDescription}" />
+				<p>
+					<a th:text="#{home.signIn}" th:href="@{/signin}" class="btn btn-primary btn-lg" role="button" />
+					<a th:text="#{home.signUp}" th:href="@{/signup}" class="btn btn-primary btn-lg" role="button" />
+				</p>
+			</div>
+		</div>
+
+		<!-- Bootstrap core JavaScript
+		================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script th:replace="fragments/libs :: jquery" />
+		<script th:replace="fragments/libs :: bootstrap_js" />
+	</body>
+</html>
