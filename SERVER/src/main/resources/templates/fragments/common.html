@@ -14,7 +14,7 @@
 		<link th:replace="fragments/libs :: bootstrap_theme_css"/>
 
 		<!-- Custom styles for this template -->
-		<link th:href="@{/static/style.css}" rel="stylesheet" />
+		<link th:href="@{/static/css/style.css}" rel="stylesheet" />
 	</head>
 	<body th:with="loginUser = ${#vars.get('loginUser')}">
 		<nav th:fragment="navbar" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -37,7 +37,7 @@
 				</div><!--/.nav-collapse -->
 			</div>
 		</nav>
-		<script th:src="@{/static/js/reportory/core.js}" th:fragment="core_js"/>
-		<script th:src="@{/static/js/reportory/util.js}" th:fragment="util_js"/>
+		<script th:src="@{/static/js/core.js}" th:fragment="core_js"/>
+		<script th:src="@{/static/js/util.js}" th:fragment="util_js"/>
 	</body>
 </html>

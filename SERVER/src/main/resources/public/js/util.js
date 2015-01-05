@@ -1,5 +1,5 @@
 /*!
- * Common util library for reportory
+ * Common util library for REPORTORY
  * It needs jQuery library for working.
  */
 

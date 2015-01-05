@@ -1,29 +1,11 @@
-/**
- * Created by infinitu on 14. 12. 29..
+/*!
+ * Upload library for REPORTORY
  */
-
-document.getElementById("upload").onchange = function(ev){
-    console.log("onchange!");
-    console.log(ev);
-    var files = ev.srcElement.files;
-
-    ev.preventDefault();
-    if(!files) {
-        return;
-    }
-    for(var i=0 ; i < files.length ; i++){
-        uploadFile(files[i]);
-        console.log("upload start "+files[i].name);
-    }
-    ev.srcElement.value = null;
-};
-
 
 var maxRequestSize = 1024*5;
 
-function uploadFile(f){
-    
-    var url = "/attachment";
+function uploadFile(f) {
+    var url = "/attachments";
     var attachmentInfo = new Object();
     attachmentInfo.name = f.name;
     attachmentInfo.size = f.size;
@@ -33,7 +15,7 @@ function uploadFile(f){
     var param = JSON.stringify(attachmentInfo);
     
     var req = new XMLHttpRequest();
-    req.open("POST","/attachment",true);
+    req.open("POST","/attachments",true);
     req.setRequestHeader("Content-Type","application/json");
     req.onreadystatechange = function(){
         if(req.readyState != 4) return;
@@ -48,7 +30,7 @@ function uploadFile(f){
     req.send(param);
 }
 
-function uploadFragments(url,f){
+function uploadFragments(url, f) {
     console.log("upload to "+url);
     var fsize = f.size;
     var i=0;

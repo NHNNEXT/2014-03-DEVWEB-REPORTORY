@@ -1,8 +1,7 @@
 /*!
- * Core library for reportory
+ * Core library for REPORTORY
  * It needs jQuery library for working.
  */
-
 
 /*
  * Sign in functions
