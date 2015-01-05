@@ -2,6 +2,7 @@ package controllers;
 
 import autumn.Request;
 import autumn.Result;
+import autumn.annotation.Controller;
 import autumn.annotation.GET;
 import autumn.annotation.INP;
 import autumn.annotation.POST;
@@ -26,6 +27,7 @@ import java.util.List;
 /**
  * Created by infinitu on 15. 1. 4..
  */
+@Controller
 public class SubmissionRestController {
 
     public static class SubmissionWithAttach extends Submission {
@@ -91,22 +93,26 @@ public class SubmissionRestController {
         db.commit();
         return Result.Ok.plainText("successfully");
     }
-    
-    @GET("/{lid}/{aid}/submission") //only professor
+
+    @GET("/{lid}/{aid}/submission") //prof and studnet
     public static Result getSubmissions(Request req, @INP("lid") String lidStr,@INP("aid") String aidStr) throws ForbiddenException, SQLException {
-        
-        if(!UserService.isProfessorUser(req))
-            throw new ForbiddenException("permission denied");
-        
         int lid = Integer.parseInt(lidStr);
         int aid = Integer.parseInt(aidStr);
+        if(UserService.isProfessorUser(req))
+            return getProfSubmissions(req, lid, aid);
+        else if(UserService.isStudentUser(req))
+            return getStuAllSubmission(req, lid, aid);
+        throw new ForbiddenException("permission denied");
+    }
+    
+    private static Result getProfSubmissions(Request req,int lid ,int aid) throws ForbiddenException, SQLException {
         User user = UserService.getUserLoginData(req);
 
         List<Submission> submissions =
                 RecentSubmissionRegistrationJoin.getQuery().where((t) ->
-                        (t.left.lid).isEqualTo(lid).and(
+                        (t.left.left.lid).isEqualTo(lid).and(
                                 (t.left.aid).isEqualTo(aid).and(
-                                        (t.left.right.left.prof).isEqualTo(user.uid))))
+                                        (t.left.left.left.left.prof).isEqualTo(user.uid))))
                     .list(req.getDBConnection());
         
         if(submissions == null || submissions.size() ==0){
@@ -115,6 +121,21 @@ public class SubmissionRestController {
         
         return Result.Ok.json(submissions);
     }
+    
+    private static Result getStuAllSubmission(Request req,int lid ,int aid) throws ForbiddenException, SQLException {
+        User user = UserService.getUserLoginData(req);
+
+        List<Submission> submissions =
+                SubmissionLectureJoin.getQuery()
+                        .where((t) ->
+                                (t.left.lid).isEqualTo(lid).and(
+                                        (t.aid).isEqualTo(aid).and(
+                                                (t.right.uid) .isEqualTo (user.uid))))
+                        .list(req.getDBConnection());
+
+        return Result.Ok.json(submissions);
+    }
+
 
     @GET("/{lid}/{aid}/{sid}") //professor and owner.
     public static Result viewSubmission(Request req, @INP("lid") String lidStr,@INP("aid") String aidStr, @INP("sid") String sidStr) throws ForbiddenException, SQLException {
@@ -170,34 +191,21 @@ public class SubmissionRestController {
         List<SubmissionAttachment> atts=
                 SubmissionAttachmentsTable.getQuery().where((t) ->
                         t.aid.isEqualTo(aid).and(
-                                t.owner.isEqualTo(uid).and(
+                                t.owner.isEqualTo(submission.uid).and(
                                         t.sid.isEqualTo(sid))))
                         .list(req.getDBConnection());
-        if(atts != null)
-            submissionWithAttach.attachments = (String[]) atts.stream().map((t)->t.hashcode_id).toArray();
+        if(atts != null){
+            submissionWithAttach.attachments = new String[atts.size()];
+            for(int i=0;i<atts.size();i++){
+                submissionWithAttach.attachments[i]=atts.get(i).hashcode_id;
+            }
+        }
+            
 
         return submissionWithAttach;
     }
 
 
-    @GET("/{lid}/{aid}/submission") //only student.
-    public static Result viewAllSubmission(Request req, @INP("lid") String lidStr,@INP("aid") String aidStr) throws ForbiddenException, SQLException {
-        int lid = Integer.parseInt(lidStr);
-        int aid = Integer.parseInt(aidStr);
-        if(!UserService.isStudentUser(req))
-            throw new ForbiddenException("permission denied");
-        User user = UserService.getUserLoginData(req);
-
-        List<Submission> submissions =
-                SubmissionLectureJoin.getQuery()
-                        .where((t) ->
-                                (t.left.lid).isEqualTo(lid).and(
-                                        (t.aid).isEqualTo(aid).and(
-                                                    (t.left.left.prof) .isEqualTo (user.uid))))
-                        .list(req.getDBConnection());
-
-        return Result.Ok.json(submissions);
-    }
-
+    
 
 }

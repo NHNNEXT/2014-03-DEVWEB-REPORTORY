@@ -1,36 +1,38 @@
 package models.tables.joined;
 
-import autumn.database.*;
-import models.Submission;
+import autumn.database.Column;
+import autumn.database.Condition;
+import autumn.database.JoinQuery;
+import autumn.database.JoinTable;
+import models.RegistrationAndSubmission;
+import models.tables.SubmissionTable;
 
 import java.sql.Timestamp;
 
 /**
  * Created by infinitu on 15. 1. 4..
  */
-public class RecentSubmissionRegistrationJoin extends LeftJoinTable<LectureRegistrationAssignmentJoin, RecentSubmissionJoin, Submission> {
+public class RecentSubmissionRegistrationJoin extends JoinTable<RecentSubmissionIDRegistrationJoin, SubmissionTable, RegistrationAndSubmission> {
 
 
-    public Column<Integer>      uid      = left.left.uid;
-    public Column<String>       identity = left.left.identity;
-    public Column<String>       major    = left.left.major;
-    public Column<String>       stu_name = left.left.stu_name;
+    public Column<Integer>      uid      = left.left.right.uid;
+    public Column<String>       identity = left.left.right.identity;
+    public Column<String>       major    = left.left.right.major;
+    public Column<String>       stu_name = left.left.right.stu_name;
 
     public Column<Integer>      sid         = right.sid;
     public Column<Integer>      aid         = right.aid;
     public Column<String>       description = right.description;
-    public Column<Timestamp>    create_date = right.create_time;
+    public Column<Timestamp>    create_date = right.create_date;
 
     public RecentSubmissionRegistrationJoin() throws NoSuchFieldException {
-        super(new LectureRegistrationAssignmentJoin(), new RecentSubmissionJoin(), Submission.class);
+        super(new RecentSubmissionIDRegistrationJoin(), new SubmissionTable(), RegistrationAndSubmission.class);
     }
 
 
     @Override
-    public Condition on(LectureRegistrationAssignmentJoin left, RecentSubmissionJoin right) {
-        return (left.aid) .isEqualTo (right.aid) .and(
-                (left.left.uid) .isEqualTo(right.uid)
-        );
+    public Condition on(RecentSubmissionIDRegistrationJoin left, SubmissionTable right) {
+        return (left.sid) .isEqualTo (right.sid);
     }
     
 

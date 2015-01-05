@@ -21,7 +21,7 @@ public class RecentSubmissionJoin extends JoinTable<RecentSubmissionIdTable,Subm
     public Column<Integer>      uid         = right.uid        ;
     public Column<Integer>      aid         = right.aid        ;
     public Column<String> description = right.description;
-    public Column<Timestamp>    create_time = right.create_time;
+    public Column<Timestamp>    create_date = right.create_date;
     
     public RecentSubmissionJoin() throws NoSuchFieldException {
         super(new RecentSubmissionIdTable(), new SubmissionTable(), RecentSubmission.class);

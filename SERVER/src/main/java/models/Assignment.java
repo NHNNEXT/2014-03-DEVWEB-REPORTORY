@@ -14,6 +14,6 @@ public class Assignment extends JsonDataSerializable {
     public Timestamp createTime;
     public Timestamp dueTime;
     public String title;
-    public String text;
+    public String description;
 
 }

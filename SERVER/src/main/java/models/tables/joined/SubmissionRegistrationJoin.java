@@ -18,7 +18,7 @@ public class SubmissionRegistrationJoin extends JoinTable<LectureRegistrationAss
     public Column<Integer>      uid         = right.uid        ;
     public Column<Integer>      aid         = right.aid        ;
     public Column<String>       description = right.description;
-    public Column<Timestamp>    create_time = right.create_time;
+    public Column<Timestamp>    create_date = right.create_date;
 
     public SubmissionRegistrationJoin() throws NoSuchFieldException {
         super(new LectureRegistrationAssignmentJoin(), new SubmissionTable(), Submission.class);

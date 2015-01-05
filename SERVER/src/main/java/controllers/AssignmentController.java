@@ -37,7 +37,7 @@ public class AssignmentController {
             this.createTime = assignment.createTime;
             this.dueTime = assignment.dueTime;
             this.title = assignment.title;
-            this.text = assignment.text;
+            this.description = assignment.description;
         }
 
         String[] attachments;
@@ -96,7 +96,7 @@ public class AssignmentController {
     
     private static AbstractQuery<LectureRegistrationAssignmentJoin> getStuAssignQuery(StudentUser stu, int lid){
         return LectureRegistrationAssignmentJoin.getQuery().where((t)->
-                (t.left.uid).isEqualTo(stu.uid) .and(
+                (t.right.uid).isEqualTo(stu.uid) .and(
                         (t.left.lid) .isEqualTo (lid)
                 ));
     }

@@ -18,7 +18,7 @@ public class SubmissionTable extends Table<Submission>{
     public Column<Integer>      uid         = intColumn("uid")   ;
     public Column<Integer>      aid         = intColumn("aid")   ;
     public Column<String>       description = stringColumn("description");
-    public Column<Timestamp>    create_time = timestampColumn("create_date");
+    public Column<Timestamp>    create_date = timestampColumn("create_date");
 
 
     public SubmissionTable() throws NoSuchFieldException {

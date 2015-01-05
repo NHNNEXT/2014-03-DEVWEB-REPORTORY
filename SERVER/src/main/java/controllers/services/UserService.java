@@ -70,23 +70,23 @@ public class UserService {
                 .get(0);
     }
 
-    public static JsonDataSerializable getDetailUser(Integer userId, DBConnection dbConnection) throws SQLException {
+    public static JsonDataSerializable getDetailUser(Integer userId, DBConnection dbConnection) throws SQLException, ForbiddenException {
         List<Object> userList = new ArrayList<>();
 
         ProfessorUser professorUser = ProfessorUserJoin.getQuery()
                 .where((t)->(t.uid) .isEqualTo( (userId)))
                 .first(dbConnection);
-
-        userList.add(professorUser);
+        
+        if(professorUser!=null)
+            return professorUser;
 
         StudentUser studentUser = StudentUserJoin.getQuery()
                 .where((t)->(t.uid) .isEqualTo( (userId)))
                 .first(dbConnection);
-
-        userList.add(studentUser);
-
-        return (JsonDataSerializable) userList.get(0);
-
+        
+        if(studentUser != null)
+            return studentUser;
+        throw new ForbiddenException("no such User.");
     }
 
     public static String getUserType(Object user) {

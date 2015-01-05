@@ -29,6 +29,6 @@ public class RecentSubmissionIdTable extends Table<RecentSubmissionIdTable.Submi
 
     @Override
     protected String toSQL() {
-        return "(SELECT max(sid) AS max_sid, count(*) AS count, aid,uid FROM Submissions GROUP BY aid, uid)";
+        return "(SELECT max(sid) AS max_sid, count(*) AS count, aid,uid FROM Submissions GROUP BY aid, uid) "+getTag();
     }
 }

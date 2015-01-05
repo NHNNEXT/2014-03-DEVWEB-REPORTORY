@@ -11,7 +11,6 @@ public abstract class JsonDataSerializable {
         @Override
         protected Gson initialValue() {
             GsonBuilder gb = new GsonBuilder();
-            gb.excludeFieldsWithoutExposeAnnotation();
             return gb.create();
         }
     };

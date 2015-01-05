@@ -18,7 +18,7 @@ public class SubmissionLectureJoin extends JoinTable<LectureAssignmentJoin, Subm
     public Column<Integer>      uid         = right.uid        ;
     public Column<Integer>      aid         = right.aid        ;
     public Column<String>       description = right.description;
-    public Column<Timestamp>    create_time = right.create_time;
+    public Column<Timestamp>    create_date = right.create_date;
 
     public SubmissionLectureJoin() throws NoSuchFieldException {
         super(new LectureAssignmentJoin(), new SubmissionTable(), Submission.class);
