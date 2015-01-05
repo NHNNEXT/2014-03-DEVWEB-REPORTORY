@@ -3,210 +3,92 @@ package controllers;
 import autumn.Request;
 import autumn.Result;
 import autumn.annotation.Controller;
-import autumn.annotation.GET;
 import autumn.annotation.INP;
 import autumn.annotation.POST;
-import autumn.database.jdbc.DBConnection;
+import autumn.header.Header;
+import controllers.action.RestAction;
+import controllers.models.SubmissionWithAttach;
 import controllers.services.AssignmentService;
+import controllers.services.SubmissionService;
 import controllers.services.UserService;
-import models.*;
-import models.tables.AssignmentAttachmentTable;
-import models.tables.SubmissionAttachmentsTable;
-import models.tables.SubmissionTable;
-import models.tables.joined.RecentSubmissionRegistrationJoin;
-import models.tables.joined.SubmissionLectureJoin;
-import models.tables.joined.SubmissionRegistrationJoin;
+import models.Assignment;
+import models.StudentUser;
+import util.ResultResponse;
+import util.exceptions.BadRequestException;
 import util.exceptions.ForbiddenException;
 import util.exceptions.NotFoundException;
 
-import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.List;
 
-/**
- * Created by infinitu on 15. 1. 4..
- */
 @Controller
 public class SubmissionRestController {
 
-    public static class SubmissionWithAttach extends Submission {
-        public SubmissionWithAttach() {
-        }
+    // @GET("/lectures/{lectureId}/assignments/{assignmentId}/submissions")
+    public static Result listSubmission(Request req,
+                                        String lectureIdParam, String assignmentIdParam) {
+        int lectureId = Integer.parseInt(lectureIdParam);
+        int assignmentId = Integer.parseInt(lectureIdParam);
 
-        public SubmissionWithAttach(Submission submission) {
-            this.sid         = submission.sid         ;
-            this.uid         = submission.uid         ;
-            this.aid         = submission.aid         ;
-            this.description = submission.description ;
-            this.create_date = submission.create_date ;
-        }
-        String[] previous;
-        String[] attachments;
-    }
-    @POST("/{lid}/{aid}/submission") //only student
-    public static Result postSubmission(Request req, @INP("lid") String lidStr,@INP("aid") String aidStr)
-            throws ForbiddenException, SQLException {
-        
-        if(!UserService.isStudentUser(req))
+        return RestAction.doAction(() -> {
+            if (UserService.isProfessorUser(req))
+                return Result.Ok.json(SubmissionService.getSubmissions(lectureId, assignmentId, UserService.getProfLoginData(req), req.getDBConnection()));
+            else if (UserService.isStudentUser(req))
+                return Result.Ok.json(SubmissionService.getSubmissions(lectureId, assignmentId, UserService.getStuLoginData(req), req.getDBConnection()));
             throw new ForbiddenException("permission_denied");
-        
-        StudentUser user = UserService.getStuLoginData(req);
-        int lid = Integer.parseInt(lidStr);
-        int aid = Integer.parseInt(aidStr);
-        Assignment assignment = null;
-        try {
-            assignment = AssignmentService.getAssignment(lid, aid, user, req.getDBConnection());
-        } catch (NotFoundException e) {
-            throw new ForbiddenException("assignment_permission_denied");
-        }
+        });
+    }
 
-        SubmissionWithAttach submission = req.body().asJson().mapping(SubmissionWithAttach.class);
-        submission.uid = user.uid;
-        submission.aid = aid;
-        submission.create_date = new Timestamp(System.currentTimeMillis());
+    // @GET("/lectures/{lectureId}/assignments/{assignmentId}/submissions/{submissionId}")
+    public static Result viewSubmission(Request req,
+                                        String lectureIdParam, String assignmentIdParam, String submissionIdParam) {
+        int lectureId = Integer.parseInt(lectureIdParam);
+        int assignmentId = Integer.parseInt(lectureIdParam);
+        int submissionId = Integer.parseInt(submissionIdParam);
 
-        DBConnection db = req.getDBConnection();
-        
-        db.transaction();
-        
-        Integer sid = SubmissionTable.getQuery().insertReturningGenKey(db,submission);
-        
-        if(sid == null)
-            return Result.BadRequest.plainText("bad submission.");
-        
-        if(submission.attachments!=null && submission.attachments.length>0) {
-            SubmissionAttachment[] atts = new SubmissionAttachment[submission.attachments.length];
-            for (int i = 0; i < atts.length; i++) {
-                atts[i] = new SubmissionAttachment();
-                atts[i].aid = aid;
-                atts[i].hashcode_id = submission.attachments[i];
-                atts[i].sid = sid;
-                atts[i].owner = user.uid;
+        return RestAction.doAction(() -> {
+            if (UserService.isProfessorUser(req))
+                return Result.Ok.json(SubmissionService.getSubmission(lectureId, assignmentId, submissionId, UserService.getProfLoginData(req), req.getDBConnection()));
+            else if (UserService.isStudentUser(req))
+                return Result.Ok.json(SubmissionService.getSubmission(lectureId, assignmentId, submissionId, UserService.getStuLoginData(req), req.getDBConnection()));
+            throw new ForbiddenException("permission_denied");
+        });
+    }
 
+    @POST("/lectures/{lectureId}/assignments/{assignmentId}/submissions")
+    public static Result createSubmission(Request req,
+                                          @INP("lectureId") String lectureIdParam,
+                                          @INP("assignmentId") String assignmentIdParam) {
+        int lectureId = Integer.parseInt(lectureIdParam);
+        int assignmentId = Integer.parseInt(assignmentIdParam);
+
+        return RestAction.doAction(() -> {
+            if (!UserService.isStudentUser(req))
+                throw new ForbiddenException("only_students_can_create_submission");
+
+            StudentUser user = UserService.getStuLoginData(req);
+
+            Assignment assignment = null;
+            try {
+                assignment = AssignmentService.getAssignment(lectureId, assignmentId, user, req.getDBConnection());
+            } catch (NotFoundException e) {
+                throw new ForbiddenException("permission_denied");
             }
 
-            int rows = AssignmentAttachmentTable.getQuery().insert(db, atts);
-            if (rows < atts.length) {
-                db.rollBack();
-                return Result.BadRequest.plainText("bad attachments.");
+            SubmissionWithAttach submission;
+            try {
+                submission = req.body().asJson().mapping(SubmissionWithAttach.class);
+            } catch (Exception e) {
+                throw new BadRequestException("invalid_request");
             }
-        }
-        db.commit();
-        return Result.Ok.plainText("successfully");
+
+            submission.uid = user.uid;
+            submission.aid = assignmentId;
+            submission.create_date = new Timestamp(System.currentTimeMillis());
+
+            Integer generatedSubmissionId = SubmissionService.createSubmission(submission, assignmentId, user.uid, req.getDBConnection());
+            return Result.Ok.json(new ResultResponse("Submission created"))
+                    .with(new Header(Header.LOCATION, "/lectures/" + lectureId + "/assignments/" + assignmentId + "/submissions/" + generatedSubmissionId));
+        });
     }
-
-    @GET("/{lid}/{aid}/submission") //prof and studnet
-    public static Result getSubmissions(Request req, @INP("lid") String lidStr,@INP("aid") String aidStr) throws ForbiddenException, SQLException {
-        int lid = Integer.parseInt(lidStr);
-        int aid = Integer.parseInt(aidStr);
-        if(UserService.isProfessorUser(req))
-            return getProfSubmissions(req, lid, aid);
-        else if(UserService.isStudentUser(req))
-            return getStuAllSubmission(req, lid, aid);
-        throw new ForbiddenException("permission denied");
-    }
-    
-    private static Result getProfSubmissions(Request req,int lid ,int aid) throws ForbiddenException, SQLException {
-        User user = UserService.getUserLoginData(req);
-
-        List<Submission> submissions =
-                RecentSubmissionRegistrationJoin.getQuery().where((t) ->
-                        (t.left.left.lid).isEqualTo(lid).and(
-                                (t.left.aid).isEqualTo(aid).and(
-                                        (t.left.left.left.left.prof).isEqualTo(user.uid))))
-                    .list(req.getDBConnection());
-        
-        if(submissions == null || submissions.size() ==0){
-            throw new ForbiddenException("no such submissions.");
-        }
-        
-        return Result.Ok.json(submissions);
-    }
-    
-    private static Result getStuAllSubmission(Request req,int lid ,int aid) throws ForbiddenException, SQLException {
-        User user = UserService.getUserLoginData(req);
-
-        List<Submission> submissions =
-                SubmissionLectureJoin.getQuery()
-                        .where((t) ->
-                                (t.left.lid).isEqualTo(lid).and(
-                                        (t.aid).isEqualTo(aid).and(
-                                                (t.right.uid).isEqualTo(user.uid))))
-                        .list(req.getDBConnection());
-
-        return Result.Ok.json(submissions);
-    }
-
-
-    @GET("/{lid}/{aid}/{sid}") //professor and owner.
-    public static Result viewSubmission(Request req, @INP("lid") String lidStr,@INP("aid") String aidStr, @INP("sid") String sidStr) throws ForbiddenException, SQLException {
-        int lid = Integer.parseInt(lidStr);
-        int aid = Integer.parseInt(aidStr);
-        int sid = Integer.parseInt(sidStr);
-        if(UserService.isProfessorUser(req))
-            return profViewSubmission(req,lid,aid,sid);
-        else if(UserService.isStudentUser(req))
-            return stuViewSubmission(req,lid,aid,sid);
-        throw new ForbiddenException("permission denied");
-    }
-
-    private static Result stuViewSubmission(Request req, int lid, int aid, int sid) throws SQLException, ForbiddenException {
-        User user = UserService.getUserLoginData(req);
-
-        Submission submission =
-                SubmissionRegistrationJoin.getQuery()
-                .where((t) ->
-                        (t.left.lid).isEqualTo(lid).and(
-                                (t.aid).isEqualTo(aid).and(
-                                        (t.sid).isEqualTo(sid) .and(
-                                                (t.uid) .isEqualTo (user.uid)))))
-                .first(req.getDBConnection());
-        
-        if(submission == null)
-            throw new ForbiddenException("permission denied");
-        
-        return Result.Ok.json(addAttachment(req,aid,sid,user.uid,submission));
-    }
-    
-    private static Result profViewSubmission(Request req, int lid, int aid, int sid) throws SQLException, ForbiddenException {
-        User user = UserService.getUserLoginData(req);
-
-        Submission submission =
-                SubmissionLectureJoin.getQuery()
-                        .where((t) ->
-                                (t.left.lid).isEqualTo(lid).and(
-                                        (t.aid).isEqualTo(aid).and(
-                                                (t.sid).isEqualTo(sid) .and(
-                                                        (t.left.left.prof) .isEqualTo (user.uid)))))
-                        .first(req.getDBConnection());
-
-        if(submission == null)
-            throw new ForbiddenException("permission denied");
-
-        return Result.Ok.json(addAttachment(req,aid,sid,user.uid,submission));
-    }
-    
-    private static SubmissionWithAttach addAttachment(Request req, int aid, int sid, int uid, Submission submission) throws SQLException {
-        SubmissionWithAttach submissionWithAttach = new SubmissionWithAttach(submission);
-
-        List<SubmissionAttachment> atts=
-                SubmissionAttachmentsTable.getQuery().where((t) ->
-                        t.aid.isEqualTo(aid).and(
-                                t.owner.isEqualTo(submission.uid).and(
-                                        t.sid.isEqualTo(sid))))
-                        .list(req.getDBConnection());
-        if(atts != null){
-            submissionWithAttach.attachments = new String[atts.size()];
-            for(int i=0;i<atts.size();i++){
-                submissionWithAttach.attachments[i]=atts.get(i).hashcode_id;
-            }
-        }
-            
-
-        return submissionWithAttach;
-    }
-
-
-    
 
 }
