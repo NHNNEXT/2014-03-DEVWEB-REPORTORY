@@ -4,6 +4,7 @@ import autumn.Request;
 import autumn.Result;
 import autumn.annotation.GET;
 import autumn.annotation.INP;
+import controllers.action.ViewAction;
 
 public class SubmissionViewController {
 
@@ -13,7 +14,7 @@ public class SubmissionViewController {
         int lectureId = Integer.parseInt(lectureIdParam);
         int assignmentId = Integer.parseInt(lectureIdParam);
 
-        return Result.Ok.template("submissionList");
+        return ViewAction.doActionWithLoginUser(req, () -> Result.Ok.template("submissionList"));
     }
 
     // @GET("/lectures/{lectureId}/assignments/{assignmentId}/submissions/{submissionId}")
@@ -23,7 +24,7 @@ public class SubmissionViewController {
         int assignmentId = Integer.parseInt(lectureIdParam);
         int submissionId = Integer.parseInt(submissionIdParam);
 
-        return Result.Ok.template("submissionView");
+        return ViewAction.doActionWithLoginUser(req, () -> Result.Ok.template("submissionView"));
     }
 
     @GET("/lectures/:lectureId/assignments/{assignmentId}/submissions/new")
@@ -33,6 +34,6 @@ public class SubmissionViewController {
         Integer lectureId = Integer.parseInt(lectureIdParam);
         int assignmentId = Integer.parseInt(assignmentIdParam);
 
-        return Result.Ok.template("submissionCreate");
+        return ViewAction.doActionWithLoginUser(req, () -> Result.Ok.template("submissionCreate"));
     }
 }

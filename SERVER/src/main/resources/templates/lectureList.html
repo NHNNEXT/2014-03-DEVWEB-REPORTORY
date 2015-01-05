@@ -27,5 +27,22 @@
 		<!-- Placed at the end of the document so the pages load faster -->
 		<script th:replace="fragments/libs :: jquery" />
 		<script th:replace="fragments/libs :: bootstrap_js" />
+		<script th:replace="fragments/common :: core_js" />
+		<script th:replace="fragments/common :: util_js" />
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+
+			function addLecture( idx, lecture ) {
+				console.log( lecture );
+
+				var lectureItem = $( "<a/>" ).addClass( "list-group-item" );
+				lectureItem = lectureItem.addClass( "lecture" ).text( lecture.name );
+				$( ".lecture-list" ).append( lectureItem.attr( "href", getLectureUrl( lecture.lid ) ) );
+			}
+
+			$( document ).ready( getLectures( addLecture ) );
+
+		/*]]>*/
+		</script>
 	</body>
 </html>

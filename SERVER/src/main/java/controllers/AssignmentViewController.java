@@ -5,6 +5,10 @@ import autumn.Result;
 import autumn.annotation.Controller;
 import autumn.annotation.GET;
 import autumn.annotation.INP;
+import controllers.action.ViewAction;
+import controllers.services.AssignmentService;
+import controllers.services.UserService;
+import util.exceptions.ForbiddenException;
 
 @Controller
 public class AssignmentViewController {
@@ -14,7 +18,7 @@ public class AssignmentViewController {
                                         String lectureIdParam) {
         Integer lectureId = Integer.parseInt(lectureIdParam);
 
-        return Result.Ok.template("assignmentList");
+        return ViewAction.doActionWithLoginUser(req, () -> Result.Ok.template("assignmentList"));
     }
 
     // @GET("/lectures/:lectureId/assignments/:assignmentId")
@@ -23,7 +27,14 @@ public class AssignmentViewController {
         Integer lectureId = Integer.parseInt(lectureIdParam);
         Integer assignmentId = Integer.parseInt(assignmentIdParam);
 
-        return Result.Ok.template("assignmentView");
+        return ViewAction.doActionWithLoginUser(req, () -> {
+            if(UserService.isProfessorUser(req)) {
+                return Result.Ok.template("assignmentView").withVariable("assignment", AssignmentService.getAssignment(lectureId, assignmentId, UserService.getProfLoginData(req), req.getDBConnection()));
+            } else if (UserService.isStudentUser(req)) {
+                return Result.Ok.template("assignmentView").withVariable("assignment", AssignmentService.getAssignment(lectureId, assignmentId, UserService.getStuLoginData(req), req.getDBConnection()));
+            }
+            throw new ForbiddenException("login_required");
+        });
     }
 
     @GET("/lectures/:lectureId/assignments/new")
@@ -31,6 +42,6 @@ public class AssignmentViewController {
                                              @INP("lectureId") String lectureIdParam) {
         Integer lectureId = Integer.parseInt(lectureIdParam);
 
-        return Result.Ok.template("assignmentCreate");
+        return ViewAction.doActionWithLoginUser(req, () -> Result.Ok.template("assignmentCreate"));
     }
 }

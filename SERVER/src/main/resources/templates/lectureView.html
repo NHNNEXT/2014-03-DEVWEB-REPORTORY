@@ -8,7 +8,7 @@
 			<div class="row">
 				<div class="col-sm-3 col-md-2 sidebar">
 					<ul class="nav nav-sidebar lecture-list">
-						<li><a th:href="@{/lectures/list.do}"><h4>
+						<li><a th:href="@{/lectures}"><h4>
 							<span class="fui-check"></span>&nbsp;&nbsp;<span th:text="#{text.selectLecture}" />
 						</h4></a></li>
 					</ul>
@@ -28,5 +28,21 @@
 		<!-- Placed at the end of the document so the pages load faster -->
 		<script th:replace="fragments/libs :: jquery" />
 		<script th:replace="fragments/libs :: bootstrap_js" />
+		<script th:replace="fragments/common :: core_js" />
+		<script th:replace="fragments/common :: util_js" />
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+
+			function addAssignment( idx, assignment ) {
+				console.log( assignment );
+				var assignmentItem = $( "<a/>" ).addClass( "list-group-item" );
+				assignmentItem = assignmentItem.addClass( "assignment" ).text( assignment.title );
+				$( ".assignment-list" ).append( assignmentItem.attr( "href", getAssignmentUrl( assignment.lid, assignment.aid ) ) );
+			}
+
+			$( document ).ready( getAssignments( [[${lecture.lid}]], addAssignment ) );
+
+		/*]]>*/
+		</script>
 	</body>
 </html>

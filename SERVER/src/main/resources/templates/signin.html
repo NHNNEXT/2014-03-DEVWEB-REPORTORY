@@ -32,8 +32,7 @@
 				var email = $("#inputEmail").val();
 				var passwd = $("#inputPassword").val();
 				var success = function (xhr) {
-					// window.location = "/";
-					window.history.back();
+					goPreviousPage();
 				};
 
 				requestSignin(email, passwd, success);

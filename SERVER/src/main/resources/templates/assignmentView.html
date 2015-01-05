@@ -8,10 +8,10 @@
 			<div class="row">
 				<div class="col-sm-3 col-md-2 sidebar">
 					<ul class="nav nav-sidebar assignment-list">
-						<li><a th:href="@{/lectures/list.do}"><h4>
+						<li><a th:href="@{/lectures}"><h4>
 							<span class="fui-check"></span>&nbsp;&nbsp;<span th:text="#{text.selectLecture}" />
 						</h4></a></li>
-						<li><a th:href="@{/lectures/{lectureId}/view.do(lectureId=${assignment.lectureId})}"><h4>
+						<li><a th:href="@{/lectures/{lectureId}(lectureId=${assignment.lid})}"><h4>
 							<span class="fui-check"></span>&nbsp;&nbsp;<span th:text="#{text.selectAssignment}" />
 						</h4></a></li>
 					</ul>
@@ -35,55 +35,5 @@
 		<!-- Placed at the end of the document so the pages load faster -->
 		<script th:replace="fragments/libs :: jquery" />
 		<script th:replace="fragments/libs :: bootstrap_js" />
-
-		<script th:inline="javascript">
-		/*<![CDATA[*/
-			function getLectureId() {
-				return [[${assignment.lectureId}]];
-			}
-
-			function getAssignmentId() {
-				return [[${assignment.id}]];
-			}
-
-			function getAssignments() {
-				$.ajax({
-					url: [[@{/}]] + "lectures" + "/" + getLectureId() + "/" + "assignments",
-					dataType: "json",
-					success: function( assignments ) {
-						//$( ".assignment-list" ).empty();
-						$.each( assignments, function( idx, assignment ) {
-							addAssignmentToNav( assignment );
-						});
-					}
-				});
-			}
-
-			function getSubmissions() {
-				$.ajax({
-					url: "./" + "submissions",
-					dataType: "json",
-					success: function( submissions ) {
-						console.log( submissions );
-					}
-				});
-			}
-
-			function addAssignmentToNav( assignment ) {
-				console.log( assignment );
-				var assignmentLink = $( "<a/>" );
-				assignmentLink = assignmentLink.addClass( "assignment" ).text( assignment.title ).attr( "href", [[@{/}]] + "assignments" + "/" + assignment.id + "/view.do" );
-				assignmentItem = $( "<li/>" );
-				if( assignment.id == getAssignmentId() ) {
-					assignmentItem = assignmentItem.addClass( "active" );
-					assignmentLink = assignmentLink.attr( "href", "#" );
-				}
-				$( ".nav.assignment-list" ).append( assignmentItem.append( assignmentLink ) );
-			}
-
-			$( document ).ready( getAssignments );
-			$( document ).ready( getSubmissions );
-		/*]]>*/
-		</script>
 	</body>
 </html>
