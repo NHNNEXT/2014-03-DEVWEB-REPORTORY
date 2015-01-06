@@ -12,13 +12,8 @@ import util.exceptions.NotFoundException;
 import java.sql.SQLException;
 
 public class ViewAction {
-    public interface ViewActionWrapper {
-        public TemplateResult viewAction() throws BadRequestException, ForbiddenException, NotFoundException, InternalServerErrorException, SQLException;
-    }
-
     private static final String ERROR_TEMPLATE_NAME = "error";
     private static final String ERROR_MESSAGE_VARIABLE_NAME = "errorMessage";
-
     private static final String LOGIN_USER_VARIABLE_NAME = "loginUser";
     private static final String USER_TYPE_VARIABLE_NAME = "userType";
 
@@ -49,5 +44,9 @@ public class ViewAction {
     private static TemplateResult getErrorTemplateResult(Result.StatusCodeHolder statusCodeHolder, String errorMessage) {
         return statusCodeHolder.template(ERROR_TEMPLATE_NAME)
                 .withVariable(ERROR_MESSAGE_VARIABLE_NAME, errorMessage);
+    }
+
+    public interface ViewActionWrapper {
+        public TemplateResult viewAction() throws BadRequestException, ForbiddenException, NotFoundException, InternalServerErrorException, SQLException;
     }
 }

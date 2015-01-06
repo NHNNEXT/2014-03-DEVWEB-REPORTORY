@@ -13,21 +13,21 @@ import java.sql.Timestamp;
  */
 
 @Model("Assignments")
-public class AssignmentTable extends Table<Assignment>{
+public class AssignmentTable extends Table<Assignment> {
 
-    public Column<Integer>   aid = intColumn("aid");
-    public Column<Integer>   lid = intColumn("lid");
+    private static ThreadLocal<TableQuery<AssignmentTable>> tQuery;
+    public Column<Integer> aid = intColumn("aid");
+    public Column<Integer> lid = intColumn("lid");
     public Column<Timestamp> createTime = timestampColumn("create_date");
     public Column<Timestamp> dueTime = timestampColumn("due_date");
-    public Column<String>    title = stringColumn("title");
-    public Column<String>    description = stringColumn("description");
+    public Column<String> title = stringColumn("title");
+    public Column<String> description = stringColumn("description");
+
 
     public AssignmentTable() throws NoSuchFieldException {
         super(Assignment.class);
     }
 
-
-    private static ThreadLocal<TableQuery<AssignmentTable>> tQuery;
     public static TableQuery<AssignmentTable> getQuery() {
         if (tQuery == null)
             tQuery = new ThreadLocal<TableQuery<AssignmentTable>>() {

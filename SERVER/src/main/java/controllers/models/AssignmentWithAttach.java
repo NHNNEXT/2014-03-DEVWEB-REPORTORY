@@ -3,6 +3,8 @@ package controllers.models;
 import models.Assignment;
 
 public class AssignmentWithAttach extends Assignment {
+    public String[] attachments;
+
     public AssignmentWithAttach() {
     }
 
@@ -14,6 +16,4 @@ public class AssignmentWithAttach extends Assignment {
         this.title = assignment.title;
         this.description = assignment.description;
     }
-
-    public String[] attachments;
 }

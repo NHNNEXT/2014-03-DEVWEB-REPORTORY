@@ -8,7 +8,7 @@ function getObjectFromXHR(xhr) {
 }
 
 function goPreviousPage() {
-    if(document.referrer == "") {
+    if (document.referrer == "") {
         window.location = "/";
         return;
     }

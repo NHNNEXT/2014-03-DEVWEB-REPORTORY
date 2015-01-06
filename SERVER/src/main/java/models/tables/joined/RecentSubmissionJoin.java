@@ -5,7 +5,6 @@ import autumn.database.Condition;
 import autumn.database.JoinQuery;
 import autumn.database.JoinTable;
 import models.RecentSubmission;
-import models.Submission;
 import models.tables.RecentSubmissionIdTable;
 import models.tables.SubmissionTable;
 
@@ -14,25 +13,20 @@ import java.sql.Timestamp;
 /**
  * Created by infinitu on 15. 1. 4..
  */
-public class RecentSubmissionJoin extends JoinTable<RecentSubmissionIdTable,SubmissionTable, RecentSubmission> {
+public class RecentSubmissionJoin extends JoinTable<RecentSubmissionIdTable, SubmissionTable, RecentSubmission> {
 
-    public Column<Integer>      sid         = right.sid        ;
-    public Column<Integer>      count       = left.count       ;
-    public Column<Integer>      uid         = right.uid        ;
-    public Column<Integer>      aid         = right.aid        ;
+    private static ThreadLocal<JoinQuery<RecentSubmissionJoin>> tQuery;
+    public Column<Integer> sid = right.sid;
+    public Column<Integer> count = left.count;
+    public Column<Integer> uid = right.uid;
+    public Column<Integer> aid = right.aid;
     public Column<String> description = right.description;
-    public Column<Timestamp>    create_date = right.create_date;
-    
+    public Column<Timestamp> create_date = right.create_date;
+
     public RecentSubmissionJoin() throws NoSuchFieldException {
         super(new RecentSubmissionIdTable(), new SubmissionTable(), RecentSubmission.class);
     }
 
-    @Override
-    public Condition on(RecentSubmissionIdTable recentSubmissionIdTable, SubmissionTable submissionTable) {
-        return (recentSubmissionIdTable.maxSid) .isEqualTo (submissionTable.sid);
-    }
-
-    private static ThreadLocal<JoinQuery<RecentSubmissionJoin>> tQuery;
     public static JoinQuery<RecentSubmissionJoin> getQuery() {
         if (tQuery == null)
             tQuery = new ThreadLocal<JoinQuery<RecentSubmissionJoin>>() {
@@ -42,5 +36,10 @@ public class RecentSubmissionJoin extends JoinTable<RecentSubmissionIdTable,Subm
                 }
             };
         return tQuery.get();
+    }
+
+    @Override
+    public Condition on(RecentSubmissionIdTable recentSubmissionIdTable, SubmissionTable submissionTable) {
+        return (recentSubmissionIdTable.maxSid).isEqualTo(submissionTable.sid);
     }
 }

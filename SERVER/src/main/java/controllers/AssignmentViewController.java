@@ -28,7 +28,7 @@ public class AssignmentViewController {
         Integer assignmentId = Integer.parseInt(assignmentIdParam);
 
         return ViewAction.doActionWithLoginUser(req, () -> {
-            if(UserService.isProfessorUser(req)) {
+            if (UserService.isProfessorUser(req)) {
                 return Result.Ok.template("assignmentView")
                         .withVariable("assignment", AssignmentService.getAssignment(lectureId, assignmentId, UserService.getProfLoginData(req), req.getDBConnection()));
             } else if (UserService.isStudentUser(req)) {

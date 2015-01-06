@@ -7,8 +7,8 @@ import util.JsonDataSerializable;
  */
 public class AssignmentAttachment extends JsonDataSerializable {
 
-    public int      aid     ;
-    public String   hashcode;
-    public int      owner;
+    public int aid;
+    public String hashcode;
+    public int owner;
 
 }

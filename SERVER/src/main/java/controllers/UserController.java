@@ -4,9 +4,6 @@ import autumn.Request;
 import autumn.Result;
 import autumn.annotation.Controller;
 import autumn.annotation.GET;
-import autumn.header.session.SessionData;
-import controllers.services.UserService;
-import util.ResultResponse;
 
 @Controller
 public class UserController {

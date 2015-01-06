@@ -8,9 +8,12 @@ import util.JsonDataSerializable;
  */
 public class Attachment extends JsonDataSerializable {
 
-    public String   hashcode_id ;
-    @Expose public String   directory   ;
+    public String hashcode_id;
+    @Expose
+    public String directory;
     public String filename;
-    @Expose public String   type        ;
-    @Expose public int      owner       ;
+    @Expose
+    public String type;
+    @Expose
+    public int owner;
 }

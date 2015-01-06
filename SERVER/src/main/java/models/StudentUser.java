@@ -9,16 +9,16 @@ import java.sql.Timestamp;
  */
 public class StudentUser extends JsonDataSerializable {
 
-    public int      uid         ;
-    public String   name        ;
-    public String   email       ;
-    public String   passwd      ;
-    public String   third_auth  ;
-    public Timestamp join_date   ;
-    public String   defIdentity ;
-    public String   defMajor    ;
+    public int uid;
+    public String name;
+    public String email;
+    public String passwd;
+    public String third_auth;
+    public Timestamp join_date;
+    public String defIdentity;
+    public String defMajor;
 
-    public Student toStudent(){
+    public Student toStudent() {
         Student stu = new Student();
         stu.uid = uid;
         stu.defIdentity = defIdentity;
@@ -26,11 +26,11 @@ public class StudentUser extends JsonDataSerializable {
         return stu;
     }
 
-    public User toUser(){
+    public User toUser() {
         User user = new User();
         user.uid = uid;
         user.name = name;
-        user.email=email;
+        user.email = email;
         user.passwd = passwd;
         user.third_auth = third_auth;
         user.join_date = join_date;

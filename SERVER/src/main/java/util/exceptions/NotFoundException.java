@@ -6,7 +6,7 @@ public class NotFoundException extends LocalizedException {
     private Throwable ex;
 
     public NotFoundException() {
-        super((Throwable)null);
+        super((Throwable) null);
     }
 
     public NotFoundException(String s) {

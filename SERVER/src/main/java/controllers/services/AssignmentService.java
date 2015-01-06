@@ -20,7 +20,7 @@ public class AssignmentService {
 
     public static AssignmentWithAttach getAssignment(Integer lectureId, Integer assignmentId, ProfessorUser user, DBConnection dbConnection) throws SQLException, NotFoundException {
         Assignment assignment = getUserAssignQuery(user, lectureId)
-                .where((t) -> (t.aid) .isEqualTo (assignmentId))
+                .where((t) -> (t.aid).isEqualTo(assignmentId))
                 .first(dbConnection);
 
         if (assignment == null) {
@@ -32,7 +32,7 @@ public class AssignmentService {
 
     public static AssignmentWithAttach getAssignment(Integer lectureId, Integer assignmentId, StudentUser user, DBConnection dbConnection) throws SQLException, NotFoundException {
         Assignment assignment = getUserAssignQuery(user, lectureId)
-                .where((t) -> (t.aid) .isEqualTo (assignmentId))
+                .where((t) -> (t.aid).isEqualTo(assignmentId))
                 .first(dbConnection);
 
         if (assignment == null) {
@@ -54,11 +54,11 @@ public class AssignmentService {
         dbConnection.transaction();
 
         Integer assignmentId = AssignmentTable.getQuery().insertReturningGenKey(dbConnection, assignment);
-        if(assignmentId == null) {
+        if (assignmentId == null) {
             throw new ForbiddenException("no_such_lecture");
         }
 
-        if(assignment.attachments == null || assignment.attachments.length <= 0) {
+        if (assignment.attachments == null || assignment.attachments.length <= 0) {
             return assignmentId;
         }
 
@@ -73,7 +73,7 @@ public class AssignmentService {
         Integer rowCount = AssignmentAttachmentTable.getQuery()
                 .insert(dbConnection, attachments);
 
-        if(rowCount < attachments.length) {
+        if (rowCount < attachments.length) {
             dbConnection.rollBack();
             throw new InternalServerErrorException("internal_server_error");
         }
@@ -81,13 +81,13 @@ public class AssignmentService {
         return assignmentId;
     }
 
-    private static AbstractQuery<LectureAssignmentJoin> getUserAssignQuery(ProfessorUser prof, int lectureId){
+    private static AbstractQuery<LectureAssignmentJoin> getUserAssignQuery(ProfessorUser prof, int lectureId) {
         return LectureAssignmentJoin.getQuery()
                 .where((t) -> (t.left.prof).isEqualTo(prof.uid).and(
                         (t.left.lid).isEqualTo(lectureId)));
     }
 
-    private static AbstractQuery<LectureRegistrationAssignmentJoin> getUserAssignQuery(StudentUser stu, int lectureId){
+    private static AbstractQuery<LectureRegistrationAssignmentJoin> getUserAssignQuery(StudentUser stu, int lectureId) {
         return LectureRegistrationAssignmentJoin.getQuery()
                 .where((t) -> (t.right.uid).isEqualTo(stu.uid).and(
                         (t.left.lid).isEqualTo(lectureId)));
@@ -100,7 +100,7 @@ public class AssignmentService {
                 .where((t) -> (t.aid).isEqualTo(assignment.aid))
                 .list(dbConnection);
 
-        if(attachments == null) {
+        if (attachments == null) {
             return assignmentWithAttach;
         }
 
@@ -119,7 +119,7 @@ public class AssignmentService {
                                 (t.uid).isEqualTo(userId)))
                 .first(dbConnection);
 
-        if(submission == null) {
+        if (submission == null) {
             return false;
         }
 

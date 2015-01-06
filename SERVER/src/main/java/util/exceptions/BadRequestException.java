@@ -6,7 +6,7 @@ public class BadRequestException extends LocalizedException {
     private Throwable ex;
 
     public BadRequestException() {
-        super((Throwable)null);
+        super((Throwable) null);
     }
 
     public BadRequestException(String s) {

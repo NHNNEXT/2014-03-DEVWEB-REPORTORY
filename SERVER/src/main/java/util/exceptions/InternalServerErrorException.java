@@ -6,7 +6,7 @@ public class InternalServerErrorException extends LocalizedException {
     private Throwable ex;
 
     public InternalServerErrorException() {
-        super((Throwable)null);
+        super((Throwable) null);
     }
 
     public InternalServerErrorException(String s) {

@@ -81,17 +81,17 @@ public class UserService {
         List<Object> userList = new ArrayList<>();
 
         ProfessorUser professorUser = ProfessorUserJoin.getQuery()
-                .where((t)->(t.uid) .isEqualTo( (userId)))
+                .where((t) -> (t.uid).isEqualTo((userId)))
                 .first(dbConnection);
 
-        if(professorUser != null)
+        if (professorUser != null)
             return professorUser;
 
         StudentUser studentUser = StudentUserJoin.getQuery()
-                .where((t)->(t.uid) .isEqualTo( (userId)))
+                .where((t) -> (t.uid).isEqualTo((userId)))
                 .first(dbConnection);
 
-        if(studentUser != null)
+        if (studentUser != null)
             return studentUser;
 
         throw new ForbiddenException("no_such_user");
@@ -100,45 +100,45 @@ public class UserService {
     public static String getUserType(Object user) {
         String userType = "";
 
-        if(user instanceof ProfessorUser) {
+        if (user instanceof ProfessorUser) {
             userType = USER_TYPE_PROF;
         }
 
-        if(user instanceof StudentUser) {
+        if (user instanceof StudentUser) {
             userType = USER_TYPE_STU;
         }
 
         return userType;
     }
 
-    public static boolean isStudentUser(Request req){
+    public static boolean isStudentUser(Request req) {
         String type = (String) req.getSession(USER_TYPE_SESSION_NAME);
-        return type!=null && type.equals(USER_TYPE_STU);
+        return type != null && type.equals(USER_TYPE_STU);
     }
 
-    public static StudentUser getStuLoginData(Request req){
-        if(!isStudentUser(req))
+    public static StudentUser getStuLoginData(Request req) {
+        if (!isStudentUser(req))
             return null;
         return JsonDataSerializable.deserialize(StudentUser.class, (String) req.getSession(LOGIN_DATA_SESSION_NAME));
     }
 
-    public static boolean isProfessorUser(Request req){
+    public static boolean isProfessorUser(Request req) {
         String type = (String) req.getSession(USER_TYPE_SESSION_NAME);
-        return type!=null && type.equals(USER_TYPE_PROF);
+        return type != null && type.equals(USER_TYPE_PROF);
     }
 
-    public static ProfessorUser getProfLoginData(Request req){
-        if(!isProfessorUser(req))
+    public static ProfessorUser getProfLoginData(Request req) {
+        if (!isProfessorUser(req))
             return null;
-        return JsonDataSerializable.deserialize(ProfessorUser.class,(String)req.getSession(LOGIN_DATA_SESSION_NAME));
+        return JsonDataSerializable.deserialize(ProfessorUser.class, (String) req.getSession(LOGIN_DATA_SESSION_NAME));
     }
 
     public static User getUserLoginData(Request req) {
-        if(isStudentUser(req)) {
+        if (isStudentUser(req)) {
             return getStuLoginData(req).toUser();
         }
 
-        if(isProfessorUser(req)) {
+        if (isProfessorUser(req)) {
             return getProfLoginData(req).toUser();
         }
 

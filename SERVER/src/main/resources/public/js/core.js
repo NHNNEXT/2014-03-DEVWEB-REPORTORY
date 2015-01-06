@@ -13,13 +13,13 @@ function requestSignin(email, passwd, callback) {
         url: "/signin",
         data: "email=" + email + "&passwd=" + passwd,
         statusCode: {
-            200: function(xhr) {
+            200: function (xhr) {
                 callback(xhr);
             },
-            400: function(xhr) {
+            400: function (xhr) {
                 alert(getObjectFromXHR(xhr).result);
             },
-            403: function(xhr) {
+            403: function (xhr) {
                 alert(getObjectFromXHR(xhr).result);
             }
         }
@@ -31,21 +31,21 @@ function requestSignin(email, passwd, callback) {
  */
 
 function getLectureUrl(lectureId) {
-    if(lectureId == undefined) {
+    if (lectureId == undefined) {
         return "/" + "lectures";
     }
     return getLectureUrl() + "/" + lectureId;
 }
 
 function getAssignmentUrl(lectureId, assignmentId) {
-    if(assignmentId == undefined) {
+    if (assignmentId == undefined) {
         return getLectureUrl(lectureId) + "/" + "assignments";
     }
     return getAssignmentUrl(lectureId) + "/" + assignmentId;
 }
 
 function getSubmissionUrl(lectureId, assignmentId, submissionId) {
-    if(submissionId == undefined) {
+    if (submissionId == undefined) {
         return getAssignmentUrl(lectureId, assignmentId) + "/" + "submissions";
     }
     return getSubmissionUrl(lectureId, assignmentId) + "/" + submissionId;
@@ -62,91 +62,91 @@ function getLectures(callback) {
         headers: {
             Accept: 'application/json'
         },
-        success: function( lectures ) {
-            $.each( lectures, callback );
+        success: function (lectures) {
+            $.each(lectures, callback);
         },
-        error: function(xhr) {
-            printError( xhr );
+        error: function (xhr) {
+            printError(xhr);
         }
     });
 }
 
 function getLecture(lectureId, callback) {
     $.ajax({
-        url: getLectureUrl( lectureId ),
+        url: getLectureUrl(lectureId),
         dataType: "json",
         headers: {
             Accept: 'application/json'
         },
-        success: function( lecture ) {
-            callback( lecture );
+        success: function (lecture) {
+            callback(lecture);
         },
-        error: function(xhr) {
-            printError( xhr );
+        error: function (xhr) {
+            printError(xhr);
         }
     });
 }
 
 function getAssignments(lectureId, callback) {
     $.ajax({
-        url: getAssignmentUrl( lectureId ),
+        url: getAssignmentUrl(lectureId),
         dataType: "json",
         headers: {
             Accept: 'application/json'
         },
-        success: function( assignments ) {
-            $.each( assignments, callback );
+        success: function (assignments) {
+            $.each(assignments, callback);
         },
-        error: function(xhr) {
-            printError( xhr );
+        error: function (xhr) {
+            printError(xhr);
         }
     });
 }
 
 function getAssignment(lectureId, assignmentId, callback) {
     $.ajax({
-        url: getAssignmentUrl( lectureId, assignmentId ),
+        url: getAssignmentUrl(lectureId, assignmentId),
         dataType: "json",
         headers: {
             Accept: 'application/json'
         },
-        success: function( assignment ) {
-            callback( assignment );
+        success: function (assignment) {
+            callback(assignment);
         },
-        error: function(xhr) {
-            printError( xhr );
+        error: function (xhr) {
+            printError(xhr);
         }
     });
 }
 
 function getSubmissions(lectureId, assignmentId, callback) {
     $.ajax({
-        url: getSubmissionUrl( lectureId, assignmentId ),
+        url: getSubmissionUrl(lectureId, assignmentId),
         dataType: "json",
         headers: {
             Accept: 'application/json'
         },
-        success: function( submissions ) {
-            $.each( submissions, callback );
+        success: function (submissions) {
+            $.each(submissions, callback);
         },
-        error: function(xhr) {
-            printError( xhr );
+        error: function (xhr) {
+            printError(xhr);
         }
     });
 }
 
 function getSubmission(lectureId, assignmentId, submissionId, callback) {
     $.ajax({
-        url: getSubmissionUrl( lectureId, assignmentId, submissionId ),
+        url: getSubmissionUrl(lectureId, assignmentId, submissionId),
         dataType: "json",
         headers: {
             Accept: 'application/json'
         },
-        success: function( submission ) {
-            callback( submission );
+        success: function (submission) {
+            callback(submission);
         },
-        error: function(xhr) {
-            printError( xhr );
+        error: function (xhr) {
+            printError(xhr);
         }
     });
 }
@@ -156,20 +156,20 @@ function getSubmission(lectureId, assignmentId, submissionId, callback) {
  */
 
 function createLecture(name) {
-    var lecture = new Object();
+    var lecture = {};
     lecture.name = name;
     return lecture;
 }
 
 function createAssignment(title, description) {
-    var assignment = new Object();
+    var assignment = {};
     assignment.title = title;
     assignment.description = description;
     return assignment;
 }
 
 function createSubmission(description) {
-    var submission = new Object();
+    var submission = {};
     submission.description = description;
     return submission;
 }
@@ -182,12 +182,12 @@ function postLecture(lecture) {
     $.ajax({
         type: "POST",
         url: getLectureUrl(),
-        data: JSON.stringify( lecture ),
-        success: function(result) {
+        data: JSON.stringify(lecture),
+        success: function (result) {
             console.log(result.result);
         },
-        error: function(xhr) {
-            printError( xhr );
+        error: function (xhr) {
+            printError(xhr);
         },
         dataType: "json"
     });
@@ -196,14 +196,14 @@ function postLecture(lecture) {
 function postAssignment(lectureId, assignment) {
     $.ajax({
         type: "POST",
-        url: getAssignmentUrl( lectureId ),
-        data: JSON.stringify( assignment ),
-        success: function(result) {
+        url: getAssignmentUrl(lectureId),
+        data: JSON.stringify(assignment),
+        success: function (result) {
             // success
             console.log(result.result);
         },
-        error: function(xhr) {
-            printError( xhr );
+        error: function (xhr) {
+            printError(xhr);
         },
         dataType: "json"
     });
@@ -212,14 +212,14 @@ function postAssignment(lectureId, assignment) {
 function postSubmission(lectureId, assignmentId, submission) {
     $.ajax({
         type: "POST",
-        url: getSubmissionUrl( lectureId, assignmentId ),
-        data: JSON.stringify( submission ),
-        success: function(result) {
+        url: getSubmissionUrl(lectureId, assignmentId),
+        data: JSON.stringify(submission),
+        success: function (result) {
             // success
             console.log(result.result);
         },
-        error: function(xhr) {
-            printError( xhr );
+        error: function (xhr) {
+            printError(xhr);
         },
         dataType: "json"
     });

@@ -7,8 +7,8 @@ import util.JsonDataSerializable;
  */
 public class Student extends JsonDataSerializable {
 
-    public int      uid         ;
-    public String   defIdentity ;
-    public String   defMajor    ;
+    public int uid;
+    public String defIdentity;
+    public String defMajor;
 
 }

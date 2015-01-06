@@ -1,10 +1,12 @@
 package util.attachment;
 
-import models.Attachment;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import util.Utils;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -13,7 +15,7 @@ import java.util.zip.ZipOutputStream;
  */
 public class AttachmentZipGenerator {
     private static final String DOWNLOAD_ZIP_FOLDER = "attachDownload";
-    
+
     public static ZipOutputHolder createZip() {
         try {
             return new ZipOutputHolder();
@@ -22,28 +24,28 @@ public class AttachmentZipGenerator {
             return null;
         }
     }
-    
-    public static class ZipOutputHolder{
+
+    public static class ZipOutputHolder {
 
         private final FileOutputStream fos;
         private final ZipOutputStream zos;
         private final String zipFilePath;
 
         private ZipOutputHolder() throws FileNotFoundException {
-            zipFilePath = Utils.getTempDir()+ DOWNLOAD_ZIP_FOLDER+"/"+ System.currentTimeMillis()+".zip";
+            zipFilePath = Utils.getTempDir() + DOWNLOAD_ZIP_FOLDER + "/" + System.currentTimeMillis() + ".zip";
             fos = new FileOutputStream(zipFilePath);
             zos = new ZipOutputStream(fos);
         }
-        
+
         public ZipOutputHolder add(String EntryName, String filePath) throws IOException {
             FileInputStream fis = new FileInputStream(filePath);
             ZipEntry zipEntry = new ZipEntry(EntryName);
             zos.putNextEntry(zipEntry);
-            IOUtils.copy(fis,zos);
+            IOUtils.copy(fis, zos);
             return this;
         }
-        
-        public void close(){
+
+        public void close() {
             try {
                 zos.close();
             } catch (IOException e) {
@@ -55,11 +57,11 @@ public class AttachmentZipGenerator {
                 e.printStackTrace();
             }
         }
-        
-        public String getZip()  {
+
+        public String getZip() {
             close();
             return this.zipFilePath;
         }
     }
-    
+
 }

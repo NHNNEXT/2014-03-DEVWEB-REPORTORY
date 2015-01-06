@@ -13,14 +13,14 @@ import models.Professor;
 @Model("Professors")
 public class ProfessorTable extends Table<Professor> {
 
-    public Column<Integer>  uid     = intColumn("uid");
-    public Column<String>   major   = stringColumn("major");
+    private static ThreadLocal<TableQuery<ProfessorTable>> tQuery;
+    public Column<Integer> uid = intColumn("uid");
+    public Column<String> major = stringColumn("major");
 
     public ProfessorTable() throws NoSuchFieldException {
         super(Professor.class);
     }
 
-    private static ThreadLocal<TableQuery<ProfessorTable>> tQuery;
     public static TableQuery<ProfessorTable> getQuery() {
         if (tQuery == null)
             tQuery = new ThreadLocal<TableQuery<ProfessorTable>>() {

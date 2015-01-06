@@ -9,18 +9,18 @@ import java.sql.Timestamp;
  */
 public class RegistrationAndAttachment extends JsonDataSerializable {
 
-    public int      uid     ;
-    public String   identity;
-    public String   major   ;
-    public String   stu_name;
-    
-    public int          sid         ;
-    public int          aid         ;
-    public String       description ;
-    public Timestamp    create_date ;
-    
-    public String       directory;
-    public String       filename;
+    public int uid;
+    public String identity;
+    public String major;
+    public String stu_name;
+
+    public int sid;
+    public int aid;
+    public String description;
+    public Timestamp create_date;
+
+    public String directory;
+    public String filename;
 
 
 }
