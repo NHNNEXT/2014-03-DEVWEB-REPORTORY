@@ -6,7 +6,7 @@ public class ForbiddenException extends LocalizedException {
     private Throwable ex;
 
     public ForbiddenException() {
-        super((Throwable)null);
+        super((Throwable) null);
     }
 
     public ForbiddenException(String s) {

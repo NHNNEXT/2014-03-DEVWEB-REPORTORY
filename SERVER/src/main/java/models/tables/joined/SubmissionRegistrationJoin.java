@@ -14,23 +14,18 @@ import java.sql.Timestamp;
  */
 public class SubmissionRegistrationJoin extends JoinTable<LectureRegistrationAssignmentJoin, SubmissionTable, Submission> {
 
-    public Column<Integer>      sid         = right.sid        ;
-    public Column<Integer>      uid         = right.uid        ;
-    public Column<Integer>      aid         = right.aid        ;
-    public Column<String>       description = right.description;
-    public Column<Timestamp>    create_date = right.create_date;
+    private static ThreadLocal<JoinQuery<SubmissionRegistrationJoin>> tQuery;
+    public Column<Integer> sid = right.sid;
+    public Column<Integer> uid = right.uid;
+    public Column<Integer> aid = right.aid;
+    public Column<String> description = right.description;
+    public Column<Timestamp> create_date = right.create_date;
+
 
     public SubmissionRegistrationJoin() throws NoSuchFieldException {
         super(new LectureRegistrationAssignmentJoin(), new SubmissionTable(), Submission.class);
     }
 
-
-    @Override
-    public Condition on(LectureRegistrationAssignmentJoin left, SubmissionTable right) {
-        return (left.aid) .isEqualTo (right.aid);
-    }
-
-    private static ThreadLocal<JoinQuery<SubmissionRegistrationJoin>> tQuery;
     public static JoinQuery<SubmissionRegistrationJoin> getQuery() {
         if (tQuery == null)
             tQuery = new ThreadLocal<JoinQuery<SubmissionRegistrationJoin>>() {
@@ -40,5 +35,10 @@ public class SubmissionRegistrationJoin extends JoinTable<LectureRegistrationAss
                 }
             };
         return tQuery.get();
+    }
+
+    @Override
+    public Condition on(LectureRegistrationAssignmentJoin left, SubmissionTable right) {
+        return (left.aid).isEqualTo(right.aid);
     }
 }

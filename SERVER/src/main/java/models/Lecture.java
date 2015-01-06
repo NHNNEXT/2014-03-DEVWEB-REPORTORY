@@ -9,10 +9,10 @@ import java.util.Date;
  */
 public class Lecture extends JsonDataSerializable {
 
-    public int      lid ;
-    public int      prof;
-    public String   name;
-    public Date     startDate;
-    public Date     finishDate;
+    public int lid;
+    public int prof;
+    public String name;
+    public Date startDate;
+    public Date finishDate;
 
 }

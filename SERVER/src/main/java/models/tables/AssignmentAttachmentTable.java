@@ -11,17 +11,17 @@ import models.AssignmentAttachment;
  */
 
 @Model("Assignment_Attachments")
-public class AssignmentAttachmentTable extends Table<AssignmentAttachment>{
+public class AssignmentAttachmentTable extends Table<AssignmentAttachment> {
 
-    public Column<Integer>  aid      = intColumn("aid");
-    public Column<String >  hashcode = stringColumn("hashcode_id");
-    public Column<Integer>  owner    = intColumn("owner");
+    private static ThreadLocal<TableQuery<AssignmentAttachmentTable>> tQuery;
+    public Column<Integer> aid = intColumn("aid");
+    public Column<String> hashcode = stringColumn("hashcode_id");
+    public Column<Integer> owner = intColumn("owner");
 
     public AssignmentAttachmentTable() throws NoSuchFieldException {
         super(AssignmentAttachment.class);
     }
 
-    private static ThreadLocal<TableQuery<AssignmentAttachmentTable>> tQuery;
     public static TableQuery<AssignmentAttachmentTable> getQuery() {
         if (tQuery == null)
             tQuery = new ThreadLocal<TableQuery<AssignmentAttachmentTable>>() {

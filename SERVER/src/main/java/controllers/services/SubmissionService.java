@@ -30,7 +30,7 @@ public class SubmissionService {
                                                 (t.uid).isEqualTo(user.uid)))))
                 .first(dbConnection);
 
-        if(submission == null)
+        if (submission == null)
             throw new ForbiddenException("permission_denied");
 
         return getSubmissionWithAttach(submission, assignmentId, submissionId, user.uid, dbConnection);
@@ -45,7 +45,7 @@ public class SubmissionService {
                                                 (t.left.left.prof).isEqualTo(user.uid)))))
                 .first(dbConnection);
 
-        if(submission == null)
+        if (submission == null)
             throw new ForbiddenException("permission_denied");
 
         return getSubmissionWithAttach(submission, assignmentId, submissionId, user.uid, dbConnection);
@@ -72,7 +72,7 @@ public class SubmissionService {
                                         (t.left.left.left.left.prof).isEqualTo(user.uid))))
                 .list(dbConnection);
 
-        if(submissions == null || submissions.size() ==0){
+        if (submissions == null || submissions.size() == 0) {
             throw new ForbiddenException("no_such_submission");
         }
 
@@ -82,12 +82,12 @@ public class SubmissionService {
     public static Integer createSubmission(SubmissionWithAttach submission, Integer assignmentId, Integer userId, DBConnection dbConnection) throws SQLException, ForbiddenException, InternalServerErrorException {
         dbConnection.transaction();
 
-        Integer submissionId = SubmissionTable.getQuery().insertReturningGenKey(dbConnection,submission);
-        if(submissionId == null) {
+        Integer submissionId = SubmissionTable.getQuery().insertReturningGenKey(dbConnection, submission);
+        if (submissionId == null) {
             throw new ForbiddenException("no_such_assignment");
         }
 
-        if(submission.attachments == null || submission.attachments.length <= 0) {
+        if (submission.attachments == null || submission.attachments.length <= 0) {
             return submissionId;
         }
 
@@ -124,12 +124,12 @@ public class SubmissionService {
                                                 t.sid.isEqualTo(submissionId))))
                         .list(dbConnection);
 
-        if(attachments == null) {
+        if (attachments == null) {
             return submissionWithAttach;
         }
 
         submissionWithAttach.attachments = new String[attachments.size()];
-        for(int i = 0; i < attachments.size(); i++) {
+        for (int i = 0; i < attachments.size(); i++) {
             submissionWithAttach.attachments[i] = attachments.get(i).hashcode_id;
         }
 

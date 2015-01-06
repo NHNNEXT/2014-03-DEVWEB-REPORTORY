@@ -11,17 +11,17 @@ import models.Student;
  */
 
 @Model("Students")
-public class StudentTable extends Table<Student>{
+public class StudentTable extends Table<Student> {
 
-    public Column<Integer>  uid         = intColumn("uid");
-    public Column<String>   defIdentity = stringColumn("def_identity");
-    public Column<String>   defMajor    = stringColumn("major");
+    private static ThreadLocal<TableQuery<StudentTable>> tQuery;
+    public Column<Integer> uid = intColumn("uid");
+    public Column<String> defIdentity = stringColumn("def_identity");
+    public Column<String> defMajor = stringColumn("major");
 
     public StudentTable() throws NoSuchFieldException {
         super(Student.class);
     }
 
-    private static ThreadLocal<TableQuery<StudentTable>> tQuery;
     public static TableQuery<StudentTable> getQuery() {
         if (tQuery == null)
             tQuery = new ThreadLocal<TableQuery<StudentTable>>() {

@@ -1,32 +1,110 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-	<head th:replace="fragments/common :: header" />
-	<body>
-		<nav th:replace="fragments/common :: navbar (page=lectures)" />
+<head th:replace="fragments/common :: header"/>
+<body>
+<nav th:replace="fragments/common :: navbar (page=lectures)"/>
 
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-sm-3 col-md-2 sidebar">
-					<ul class="nav nav-sidebar lecture-list">
-						<li><a th:href="@{/lectures/list.do}"><h4>
-							<span class="fui-check"></span>&nbsp;&nbsp;<span th:text="#{text.selectLecture}" />
-						</h4></a></li>
-					</ul>
-				</div>
-				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-					<div class="page-header">
-						<h1><span th:text="${lecture.lecturename}" class="lecture-title" /></h1>
-					</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar lecture-list">
+                <li><a th:href="@{/lectures}"><h4>
+                    <span class="fui-check"></span>&nbsp;&nbsp;<span th:text="#{text.selectLecture}"/>
+                </h4></a></li>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="page-header">
+                <h1>
+                    <span th:text="${lecture.lecturename}" class="lecture-title"/>
+                    <button th:if="${userType == 'prof'}" type="button" class="btn btn-primary btn-lg btn-right"
+                            data-toggle="modal" data-target="#createAssignmentModal"><span
+                            th:text="#{text.createAssignment}"/></button>
+                </h1>
+            </div>
 
-					<div class="assignment-list list-group" />
-				</div>
-			</div>
-		</div><!-- /.container -->
+            <div class="assignment-list list-group"/>
+        </div>
+    </div>
+</div>
+<!-- /.container -->
 
-		<!-- Bootstrap core JavaScript
-		================================================== -->
-		<!-- Placed at the end of the document so the pages load faster -->
-		<script th:replace="fragments/libs :: jquery" />
-		<script th:replace="fragments/libs :: bootstrap_js" />
-	</body>
+<!-- Create Assignment Modal -->
+<div class="modal fade" id="createAssignmentModal" tabindex="-1" role="dialog"
+     aria-labelledby="createAssignmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 th:text="#{lectureView.createAssignmentHeading}" class="modal-title"
+                    id="createAssignmentModalLabel"/>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <input th:placeholder="#{lectureView.assignmentTitle}" type="text"
+                           class="form-control input-assignment-title"/>
+                    <input th:placeholder="#{lectureView.assignmentDescription}" type="text"
+                           class="form-control input-assignment-description"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button th:text="#{text.closeButton}" type="button" class="btn btn-default" data-dismiss="modal"/>
+                <button th:text="#{text.createButton}" type="button" class="btn btn-primary btn-assignment-create"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script th:replace="fragments/libs :: jquery"/>
+<script th:replace="fragments/libs :: bootstrap_js"/>
+<script th:replace="fragments/common :: core_js"/>
+<script th:replace="fragments/common :: util_js"/>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    function addAssignment(idx, assignment) {
+        console.log(assignment);
+        var assignmentItem = $("<a/>").addClass("list-group-item");
+        assignmentItem = assignmentItem.addClass("assignment").text(assignment.title);
+        $(".assignment-list").append(assignmentItem.attr("href", getAssignmentUrl(assignment.lid, assignment.aid)));
+    }
+
+    function postAssignmentFromInput() {
+        var title = $("#createAssignmentModal .input-assignment-title").val();
+        var description = $("#createAssignmentModal .input-assignment-description").val();
+
+        var assignment = createAssignment(title, description);
+        postAssignment([[${lecture.lid}]], assignment);
+
+        $("#createAssignmentModal").modal("hide");
+        window.location.reload();
+    }
+
+    function addLectureToNav(idx, lecture) {
+        console.log(lecture);
+        var lectureLink = $("<a/>");
+        lectureLink = lectureLink.addClass("lecture").text(lecture.name).attr("href", getLectureUrl(lecture.lid));
+        lectureItem = $("<li/>");
+        if (lecture.lid == [[${lecture.lid}]]) {
+            lectureItem = lectureItem.addClass("active");
+            lectureLink = lectureLink.attr("href", "#");
+        }
+        $(".nav.lecture-list").append(lectureItem.append(lectureLink));
+    }
+
+    $(function () {
+        getAssignments([[${lecture.lid}]], addAssignment);
+        getLectures(addLectureToNav);
+
+        var assignmentCreateBtn = $("#createAssignmentModal .btn-assignment-create");
+        assignmentCreateBtn.click(postAssignmentFromInput);
+    });
+
+    /*]]>*/
+</script>
+</body>
 </html>

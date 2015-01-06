@@ -2,12 +2,14 @@ package controllers;
 
 import autumn.Request;
 import autumn.Result;
+import autumn.annotation.Controller;
 import autumn.annotation.GET;
 import autumn.annotation.INP;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+@Controller
 public class SubmissionController {
 
     private static Class getController(Request req) {
@@ -20,19 +22,19 @@ public class SubmissionController {
 
     @GET("/lectures/{lectureId}/assignments/{assignmentId}/submissions")
     public static Result getSubmissionList(Request req,
-                                        @INP("lectureId") String lectureId,
-                                        @INP("assignmentId") String assignmentId) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+                                           @INP("lectureId") String lectureId,
+                                           @INP("assignmentId") String assignmentId) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Method method = getController(req).getMethod("listSubmission", req.getClass(), lectureId.getClass(), assignmentId.getClass());
-        return (Result) method.invoke(null, new Object[]{req, lectureId, assignmentId});
+        return (Result) method.invoke(null, req, lectureId, assignmentId);
     }
 
     @GET("/lectures/{lectureId}/assignments/{assignmentId}/submissions/{submissionId}")
     public static Result getSubmissionView(Request req,
-                                        @INP("lectureId") String lectureId,
-                                        @INP("assignmentId") String assignmentId,
-                                        @INP("submissionId") String submissionId) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+                                           @INP("lectureId") String lectureId,
+                                           @INP("assignmentId") String assignmentId,
+                                           @INP("submissionId") String submissionId) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Method method = getController(req).getMethod("viewSubmission", req.getClass(), lectureId.getClass(), assignmentId.getClass(), submissionId.getClass());
-        return (Result) method.invoke(null, new Object[]{req, lectureId, assignmentId, submissionId});
+        return (Result) method.invoke(null, req, lectureId, assignmentId, submissionId);
     }
 
 }

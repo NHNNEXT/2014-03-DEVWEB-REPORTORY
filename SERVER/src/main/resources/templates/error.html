@@ -1,24 +1,26 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/common :: header" />
+<head th:replace="fragments/common :: header"/>
 <body>
-<nav th:replace="fragments/common :: navbar" />
+<nav th:replace="fragments/common :: navbar"/>
 
 <div class="container">
 
     <div class="page-header">
-        <h1 th:text="#{error.pageHeading}" />
+        <h1 th:text="#{error.pageHeading}"/>
     </div>
 
-    <h3 th:text="#{error.errorDescriptionHeading}" />
-    <p th:text="${errorMessage}" />
+    <h3 th:text="#{error.errorDescriptionHeading}"/>
 
-</div> <!-- /container -->
+    <p th:text="${errorMessage}"/>
+
+</div>
+<!-- /container -->
 
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-<script th:replace="fragments/libs :: jquery" />
-<script th:replace="fragments/libs :: bootstrap_js" />
+<script th:replace="fragments/libs :: jquery"/>
+<script th:replace="fragments/libs :: bootstrap_js"/>
 </body>
 </html>

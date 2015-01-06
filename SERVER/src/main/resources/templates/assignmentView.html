@@ -1,89 +1,108 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-	<head th:replace="fragments/common :: header" />
-	<body>
-		<nav th:replace="fragments/common :: navbar" />
+<head th:replace="fragments/common :: header"/>
+<body>
+<nav th:replace="fragments/common :: navbar (page=lectures)"/>
 
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-sm-3 col-md-2 sidebar">
-					<ul class="nav nav-sidebar assignment-list">
-						<li><a th:href="@{/lectures/list.do}"><h4>
-							<span class="fui-check"></span>&nbsp;&nbsp;<span th:text="#{text.selectLecture}" />
-						</h4></a></li>
-						<li><a th:href="@{/lectures/{lectureId}/view.do(lectureId=${assignment.lectureId})}"><h4>
-							<span class="fui-check"></span>&nbsp;&nbsp;<span th:text="#{text.selectAssignment}" />
-						</h4></a></li>
-					</ul>
-				</div>
-				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-					<div class="page-header">
-						<h1><span th:text="${assignment.title}" class="assignment-title" /></h1>
-					</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar assignment-list">
+                <li><a th:href="@{/lectures}"><h4>
+                    <span class="fui-check"></span>&nbsp;&nbsp;<span th:text="#{text.selectLecture}"/>
+                </h4></a></li>
+                <li><a th:href="@{/lectures/{lectureId}(lectureId=${assignment.lid})}"><h4>
+                    <span class="fui-check"></span>&nbsp;&nbsp;<span th:text="#{text.selectAssignment}"/>
+                </h4></a></li>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="page-header">
+                <h1>
+                    <span th:text="${assignment.title}" class="assignment-title"/>
+                    <button th:if="${userType == 'stu'}" type="button" class="btn btn-primary btn-lg btn-right"
+                            data-toggle="modal" data-target="#submitAssignmentModal"><span
+                            th:text="#{text.submitAssignment}"/></button>
+                </h1>
+            </div>
 
-					<div>
-						<h3>
-							<span th:text="${assignment.description}" class="assignment-description" />
-						</h3>
-					</div>
-				</div>
-			</div>
-		</div><!-- /.container -->
+            <div>
+                <div th:if="${submitted}" th:text="#{assignmentView.alreadySubmittedMessage}" class="alert alert-info"
+                     role="alert"/>
+                <h3>
+                    <span th:text="${assignment.description}" class="assignment-description"/>
+                </h3>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.container -->
 
-		<!-- Bootstrap core JavaScript
-		================================================== -->
-		<!-- Placed at the end of the document so the pages load faster -->
-		<script th:replace="fragments/libs :: jquery" />
-		<script th:replace="fragments/libs :: bootstrap_js" />
+<!-- Submit Assignment Modal -->
+<div class="modal fade" id="submitAssignmentModal" tabindex="-1" role="dialog"
+     aria-labelledby="submitAssignmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 th:text="#{assignmentView.submitAssignmentHeading}" class="modal-title"
+                    id="submitAssignmentModalLabel"/>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <textarea th:placeholder="#{assignmentView.submissionDescription}" type="text"
+                              class="form-control input-submission-description"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button th:text="#{text.closeButton}" type="button" class="btn btn-default" data-dismiss="modal"/>
+                <button th:text="#{text.submitButton}" type="button" class="btn btn-primary btn-assignment-submit"/>
+            </div>
+        </div>
+    </div>
+</div>
 
-		<script th:inline="javascript">
-		/*<![CDATA[*/
-			function getLectureId() {
-				return [[${assignment.lectureId}]];
-			}
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script th:replace="fragments/libs :: jquery"/>
+<script th:replace="fragments/libs :: bootstrap_js"/>
+<script th:replace="fragments/common :: core_js"/>
+<script th:replace="fragments/common :: util_js"/>
+<script th:inline="javascript">
+    /*<![CDATA[*/
 
-			function getAssignmentId() {
-				return [[${assignment.id}]];
-			}
+    function postSubmissionFromInput() {
+        var description = $("#submitAssignmentModal .input-submission-description").val();
 
-			function getAssignments() {
-				$.ajax({
-					url: [[@{/}]] + "lectures" + "/" + getLectureId() + "/" + "assignments",
-					dataType: "json",
-					success: function( assignments ) {
-						//$( ".assignment-list" ).empty();
-						$.each( assignments, function( idx, assignment ) {
-							addAssignmentToNav( assignment );
-						});
-					}
-				});
-			}
+        var submission = createSubmission(description);
+        postSubmission([[${assignment.lid}]], [[${assignment.aid}]], submission);
 
-			function getSubmissions() {
-				$.ajax({
-					url: "./" + "submissions",
-					dataType: "json",
-					success: function( submissions ) {
-						console.log( submissions );
-					}
-				});
-			}
+        $("#submitAssignmentModal").modal("hide");
+        window.location.reload();
+    }
 
-			function addAssignmentToNav( assignment ) {
-				console.log( assignment );
-				var assignmentLink = $( "<a/>" );
-				assignmentLink = assignmentLink.addClass( "assignment" ).text( assignment.title ).attr( "href", [[@{/}]] + "assignments" + "/" + assignment.id + "/view.do" );
-				assignmentItem = $( "<li/>" );
-				if( assignment.id == getAssignmentId() ) {
-					assignmentItem = assignmentItem.addClass( "active" );
-					assignmentLink = assignmentLink.attr( "href", "#" );
-				}
-				$( ".nav.assignment-list" ).append( assignmentItem.append( assignmentLink ) );
-			}
+    function addAssignmentToNav(idx, assignment) {
+        console.log(assignment);
+        var assignmentLink = $("<a/>");
+        assignmentLink = assignmentLink.addClass("assignment").text(assignment.title).attr("href", getAssignmentUrl(assignment.lid, assignment.aid));
+        assignmentItem = $("<li/>");
+        if (assignment.aid == [[${assignment.aid}]]) {
+            assignmentItem = assignmentItem.addClass("active");
+            assignmentLink = assignmentLink.attr("href", "#");
+        }
+        $(".nav.assignment-list").append(assignmentItem.append(assignmentLink));
+    }
 
-			$( document ).ready( getAssignments );
-			$( document ).ready( getSubmissions );
-		/*]]>*/
-		</script>
-	</body>
+    $(function () {
+        getAssignments([[${assignment.lid}]], addAssignmentToNav);
+
+        var assignmentSubmitBtn = $("#submitAssignmentModal .btn-assignment-submit");
+        assignmentSubmitBtn.click(postSubmissionFromInput);
+    });
+
+    /*]]>*/
+</script>
+</body>
 </html>

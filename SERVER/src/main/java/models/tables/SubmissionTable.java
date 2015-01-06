@@ -12,20 +12,19 @@ import java.sql.Timestamp;
  * Created by infinitu on 14. 12. 25..
  */
 @Model("Submissions")
-public class SubmissionTable extends Table<Submission>{
+public class SubmissionTable extends Table<Submission> {
 
-    public Column<Integer>      sid         = intColumn("sid")   ;
-    public Column<Integer>      uid         = intColumn("uid")   ;
-    public Column<Integer>      aid         = intColumn("aid")   ;
-    public Column<String>       description = stringColumn("description");
-    public Column<Timestamp>    create_date = timestampColumn("create_date");
-
+    private static ThreadLocal<TableQuery<SubmissionTable>> tQuery;
+    public Column<Integer> sid = intColumn("sid");
+    public Column<Integer> uid = intColumn("uid");
+    public Column<Integer> aid = intColumn("aid");
+    public Column<String> description = stringColumn("description");
+    public Column<Timestamp> create_date = timestampColumn("create_date");
 
     public SubmissionTable() throws NoSuchFieldException {
         super(Submission.class);
     }
 
-    private static ThreadLocal<TableQuery<SubmissionTable>> tQuery;
     public static TableQuery<SubmissionTable> getQuery() {
         if (tQuery == null)
             tQuery = new ThreadLocal<TableQuery<SubmissionTable>>() {

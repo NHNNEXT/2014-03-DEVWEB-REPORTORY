@@ -40,7 +40,7 @@ public class AssignmentRestController {
         Integer assignmentId = Integer.parseInt(assignmentIdParam);
 
         return RestAction.doAction(() -> {
-            if(UserService.isProfessorUser(req)) {
+            if (UserService.isProfessorUser(req)) {
                 return Result.Ok.json(AssignmentService.getAssignment(lectureId, assignmentId, UserService.getProfLoginData(req), req.getDBConnection()));
             } else if (UserService.isStudentUser(req)) {
                 return Result.Ok.json(AssignmentService.getAssignment(lectureId, assignmentId, UserService.getStuLoginData(req), req.getDBConnection()));

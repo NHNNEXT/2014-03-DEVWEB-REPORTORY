@@ -13,19 +13,19 @@ import java.sql.Date;
  */
 
 @Model("Lecture")
-public class LectureTable extends Table<Lecture>{
+public class LectureTable extends Table<Lecture> {
 
-    public Column<Integer>  lid  = intColumn("lid");
-    public Column<Integer>  prof = intColumn("prof");
-    public Column<String>   name = stringColumn("name");
-    public Column<Date>     startDate = dateColumn("start_date");
-    public Column<Date>     finishDate = dateColumn("finish_date");
+    private static ThreadLocal<TableQuery<LectureTable>> tQuery;
+    public Column<Integer> lid = intColumn("lid");
+    public Column<Integer> prof = intColumn("prof");
+    public Column<String> name = stringColumn("name");
+    public Column<Date> startDate = dateColumn("start_date");
+    public Column<Date> finishDate = dateColumn("finish_date");
 
     public LectureTable() throws NoSuchFieldException {
         super(Lecture.class);
     }
 
-    private static ThreadLocal<TableQuery<LectureTable>> tQuery;
     public static TableQuery<LectureTable> getQuery() {
         if (tQuery == null)
             tQuery = new ThreadLocal<TableQuery<LectureTable>>() {

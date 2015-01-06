@@ -1,31 +1,94 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-	<head th:replace="fragments/common :: header" />
-	<body>
-		<nav th:replace="fragments/common :: navbar (page=lectures)" />
+<head th:replace="fragments/common :: header"/>
+<body>
+<nav th:replace="fragments/common :: navbar (page=lectures)"/>
 
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-sm-3 col-md-2 sidebar">
-					<ul class="nav nav-sidebar">
-						<li><a href="#"><h4><span th:text="#{text.selectLecture}" /></h4></a></li>
-					</ul>
-				</div><!-- /.sidebar -->
-				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-					<div class="page-header">
-						<h1><span th:text="#{text.selectLecture}" /></h1>
-					</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li><a href="#"><h4><span th:text="#{text.selectLecture}"/></h4></a></li>
+            </ul>
+        </div>
+        <!-- /.sidebar -->
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="page-header">
+                <h1>
+                    <span th:text="#{text.selectLecture}"/>
+                    <button th:if="${userType} == 'prof'" type="button" class="btn btn-primary btn-lg btn-right"
+                            data-toggle="modal" data-target="#createLectureModal"><span
+                            th:text="#{text.createLecture}"/></button>
+                </h1>
+            </div>
 
-					<div class="lecture-list list-group">
-					</div>
-				</div>
-			</div>
-		</div><!-- /.container -->
+            <div class="lecture-list list-group">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.container -->
 
-		<!-- Bootstrap core JavaScript
-		================================================== -->
-		<!-- Placed at the end of the document so the pages load faster -->
-		<script th:replace="fragments/libs :: jquery" />
-		<script th:replace="fragments/libs :: bootstrap_js" />
-	</body>
+<!-- Create Lecture Modal -->
+<div class="modal fade" id="createLectureModal" tabindex="-1" role="dialog" aria-labelledby="createLectureModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 th:text="#{lectureList.createLectureHeading}" class="modal-title" id="createLectureModalLabel"/>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <input th:placeholder="#{lectureList.lectureName}" type="text"
+                           class="form-control input-lecture-name"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button th:text="#{text.closeButton}" type="button" class="btn btn-default" data-dismiss="modal"/>
+                <button th:text="#{text.createButton}" type="button" class="btn btn-primary btn-assignment-create"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script th:replace="fragments/libs :: jquery"/>
+<script th:replace="fragments/libs :: bootstrap_js"/>
+<script th:replace="fragments/common :: core_js"/>
+<script th:replace="fragments/common :: util_js"/>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    function addLecture(idx, lecture) {
+        console.log(lecture);
+
+        var lectureItem = $("<a/>").addClass("list-group-item");
+        lectureItem = lectureItem.addClass("lecture").text(lecture.name);
+        $(".lecture-list").append(lectureItem.attr("href", getLectureUrl(lecture.lid)));
+    }
+
+    function postLectureFromInput() {
+        var name = $("#createLectureModal .input-lecture-name").val();
+
+        var lecture = createLecture(name);
+        postLecture(lecture);
+
+        $("#createLectureModal").modal("hide");
+        window.location.reload();
+    }
+
+    $(function () {
+        getLectures(addLecture);
+
+        var lectureCreateBtn = $("#createLectureModal .btn-lecture-create");
+        lectureCreateBtn.click(postLectureFromInput);
+    });
+
+    /*]]>*/
+</script>
+</body>
 </html>

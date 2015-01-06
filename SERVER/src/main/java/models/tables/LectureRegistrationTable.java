@@ -13,18 +13,18 @@ import models.LectureRegistration;
 @Model("Lecture_Registrations")
 public class LectureRegistrationTable extends Table<LectureRegistration> {
 
-    public Column<Integer>  uid     = intColumn("uid");
-    public Column<Integer>  lid     = intColumn("lid");
-    public Column<String>   identity= stringColumn("identity");
-    public Column<String>   major   = stringColumn("major");
-    public Column<String>   stu_name= stringColumn("stu_name");
-    public Column<Boolean>  accepted= booleanColumn("accepted");
+    private static ThreadLocal<TableQuery<LectureRegistrationTable>> tQuery;
+    public Column<Integer> uid = intColumn("uid");
+    public Column<Integer> lid = intColumn("lid");
+    public Column<String> identity = stringColumn("identity");
+    public Column<String> major = stringColumn("major");
+    public Column<String> stu_name = stringColumn("stu_name");
+    public Column<Boolean> accepted = booleanColumn("accepted");
 
     public LectureRegistrationTable() throws NoSuchFieldException {
         super(LectureRegistration.class);
     }
 
-    private static ThreadLocal<TableQuery<LectureRegistrationTable>> tQuery;
     public static TableQuery<LectureRegistrationTable> getQuery() {
         if (tQuery == null)
             tQuery = new ThreadLocal<TableQuery<LectureRegistrationTable>>() {

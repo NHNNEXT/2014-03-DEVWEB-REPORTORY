@@ -7,6 +7,6 @@ import java.sql.SQLException;
  */
 
 @FunctionalInterface
-public interface ConsumerThatThrow<T>{
+public interface ConsumerThatThrow<T> {
     void accept(T a) throws SQLException;
 }

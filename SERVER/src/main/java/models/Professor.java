@@ -7,7 +7,7 @@ import util.JsonDataSerializable;
  */
 public class Professor extends JsonDataSerializable {
 
-    public int      uid     ;
-    public String   major   ;
+    public int uid;
+    public String major;
 
 }

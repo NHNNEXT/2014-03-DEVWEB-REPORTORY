@@ -7,9 +7,9 @@ import util.JsonDataSerializable;
  */
 public class SubmissionAttachment extends JsonDataSerializable {
 
-    public int      sid         ;
-    public int      aid         ;
-    public String   hashcode_id ;
-    public int      owner       ;
+    public int sid;
+    public int aid;
+    public String hashcode_id;
+    public int owner;
 
 }

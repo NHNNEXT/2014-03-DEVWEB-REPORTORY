@@ -98,7 +98,7 @@ public class LectureRestController {
             LectureRegistration lectureRegistration;
             try {
                 lectureRegistration = req.body().asJson().mapping(LectureRegistration.class);
-            } catch (Exception e){
+            } catch (Exception e) {
                 throw new BadRequestException("invalid_request");
             }
 
@@ -122,7 +122,7 @@ public class LectureRestController {
 
     @POST("/lectures/:lectureId/leave")
     public static Result leaveLecture(Request req,
-                                     @INP("lectureId") String lectureIdParam) {
+                                      @INP("lectureId") String lectureIdParam) {
         Integer lectureId = Integer.parseInt(lectureIdParam);
 
         return RestAction.doAction(() -> {
