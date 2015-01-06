@@ -33,7 +33,7 @@
 						<li th:class="(${page} == 'home')? 'active'"><a th:href="@{/}">Home</a></li>
 						<li th:class="(${page} == 'lectures')? 'active'"><a th:href="@{/lectures}">Lectures</a></li>
 					</ul>
-					<p th:if="${loginUser}" class="navbar-text navbar-right"><a th:text="${loginUser.name}" href="#" class="navbar-link">User</a> <span th:text="#{text.userSuffix}"/></p>
+					<p th:if="${loginUser}" class="navbar-text navbar-right"><a th:text="${loginUser.name}" href="#" class="navbar-link">User</a><span th:text="#{text.userSuffix}"/> <a th:text="#{text.signOut}" th:href="@{/signout}" class="btn btn-default btn-xs btn-signout" role="button" /></p>
 					<p th:unless="${loginUser}" class="navbar-text navbar-right"><a th:text="#{text.signIn}" th:href="@{/signin}" class="navbar-link">Sign in</a></p>
 				</div><!--/.nav-collapse -->
 			</div>
