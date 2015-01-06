@@ -26,6 +26,10 @@ body {
   margin-top: inherit;
 }
 
+.btn-signout {
+  margin-left: 10px;
+}
+
 /*
  * Top navigation
  * Hide default border to remove 1px line.
