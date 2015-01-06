@@ -45,8 +45,8 @@ public class UserRestController {
 
             return Result.Ok.json(new ResultResponse("Logged in with " + user.email))
                     .withNewSession(
-                            new SessionData<String>("userType", UserService.getUserType(detailUser)),
-                            new SessionData<String>("loginData", detailUser.serialize())
+                            new SessionData<String>(UserService.USER_TYPE_SESSION_NAME, UserService.getUserType(detailUser)),
+                            new SessionData<String>(UserService.LOGIN_DATA_SESSION_NAME, detailUser.serialize())
                     );
         });
     }
