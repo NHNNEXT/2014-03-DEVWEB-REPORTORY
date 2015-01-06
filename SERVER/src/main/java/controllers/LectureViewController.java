@@ -24,7 +24,8 @@ public class LectureViewController {
         return ViewAction.doActionWithLoginUser(req, () -> {
             if (!(UserService.isStudentUser(req) || UserService.isProfessorUser(req)))
                 throw new ForbiddenException("permission_denied");
-            return Result.Ok.template("lectureView").withVariable("lecture", LectureService.getLecture(lectureId, req.getDBConnection()));
+            return Result.Ok.template("lectureView")
+                    .withVariable("lecture", LectureService.getLecture(lectureId, req.getDBConnection()));
         });
     }
 

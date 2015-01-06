@@ -76,8 +76,21 @@
 				window.location.reload();
 			}
 
+			function addLectureToNav( idx, lecture ) {
+				console.log( lecture );
+				var lectureLink = $( "<a/>" );
+				lectureLink = lectureLink.addClass( "lecture" ).text( lecture.name ).attr( "href", getLectureUrl( lecture.lid ) );
+				lectureItem = $( "<li/>" );
+				if( lecture.lid == [[${lecture.lid}]] ) {
+					lectureItem = lectureItem.addClass( "active" );
+					lectureLink = lectureLink.attr( "href", "#" );
+				}
+				$( ".nav.lecture-list" ).append( lectureItem.append( lectureLink ) );
+			}
+
 			$(function() {
 				getAssignments( [[${lecture.lid}]], addAssignment );
+				getLectures( addLectureToNav );
 
 				var assignmentCreateBtn = $( "#createAssignmentModal .btn-assignment-create" );
 				assignmentCreateBtn.click( postAssignmentFromInput );

@@ -29,9 +29,12 @@ public class AssignmentViewController {
 
         return ViewAction.doActionWithLoginUser(req, () -> {
             if(UserService.isProfessorUser(req)) {
-                return Result.Ok.template("assignmentView").withVariable("assignment", AssignmentService.getAssignment(lectureId, assignmentId, UserService.getProfLoginData(req), req.getDBConnection()));
+                return Result.Ok.template("assignmentView")
+                        .withVariable("assignment", AssignmentService.getAssignment(lectureId, assignmentId, UserService.getProfLoginData(req), req.getDBConnection()));
             } else if (UserService.isStudentUser(req)) {
-                return Result.Ok.template("assignmentView").withVariable("assignment", AssignmentService.getAssignment(lectureId, assignmentId, UserService.getStuLoginData(req), req.getDBConnection()));
+                return Result.Ok.template("assignmentView")
+                        .withVariable("assignment", AssignmentService.getAssignment(lectureId, assignmentId, UserService.getStuLoginData(req), req.getDBConnection()))
+                        .withVariable("submitted", AssignmentService.isSubmitted(lectureId, assignmentId, UserService.getUserLoginData(req).uid, req.getDBConnection()));
             }
             throw new ForbiddenException("login_required");
         });

@@ -3,14 +3,12 @@ package controllers.services;
 import autumn.database.AbstractQuery;
 import autumn.database.jdbc.DBConnection;
 import controllers.models.AssignmentWithAttach;
-import models.Assignment;
-import models.AssignmentAttachment;
-import models.ProfessorUser;
-import models.StudentUser;
+import models.*;
 import models.tables.AssignmentAttachmentTable;
 import models.tables.AssignmentTable;
 import models.tables.joined.LectureAssignmentJoin;
 import models.tables.joined.LectureRegistrationAssignmentJoin;
+import models.tables.joined.SubmissionLectureJoin;
 import util.exceptions.ForbiddenException;
 import util.exceptions.InternalServerErrorException;
 import util.exceptions.NotFoundException;
@@ -113,4 +111,19 @@ public class AssignmentService {
 
         return assignmentWithAttach;
     }
+
+    public static boolean isSubmitted(Integer lectureId, Integer assignmentId, Integer userId, DBConnection dbConnection) throws SQLException {
+        Submission submission = SubmissionLectureJoin.getQuery()
+                .where((t) ->
+                        (t.aid).isEqualTo(assignmentId).and(
+                                (t.uid).isEqualTo(userId)))
+                .first(dbConnection);
+
+        if(submission == null) {
+            return false;
+        }
+
+        return true;
+    }
+
 }

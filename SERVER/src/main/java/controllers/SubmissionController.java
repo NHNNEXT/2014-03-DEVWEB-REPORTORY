@@ -2,12 +2,14 @@ package controllers;
 
 import autumn.Request;
 import autumn.Result;
+import autumn.annotation.Controller;
 import autumn.annotation.GET;
 import autumn.annotation.INP;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+@Controller
 public class SubmissionController {
 
     private static Class getController(Request req) {
